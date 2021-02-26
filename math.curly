@@ -1,0 +1,239 @@
+module Math
+  (
+    maxPow2     : Int | Float                   -> Int         ,
+    maxPow10    : Int | Float                   -> Int         ,
+    abs         : Int | Float                   -> Int | Float ,
+    floor       : Int | Float                   -> Int         ,
+    sqrt        : Int | Float                   -> Float       ,
+    pow         : Int | Float -> Int | Float    -> Int | Float ,
+    root        : Int | Float -> Int            -> Float       ,
+    removeWhole : Float                         -> Float
+  )
+
+
+
+
+
+# (power of 2)th root of a number
+rtPow2 num:Float, root:Int =
+  if root == 1 then
+    num
+  else
+    rtPow2 (sqrt num) (root / 2)
+
+
+
+
+# smallest power of 2 so that the product of that power of 2 and a number is >= 1
+minDivNumPow2 num:Float, guess:Int =
+  if num * guess >= 1 then
+    guess
+  else
+    minDivNumPow2 num (guess * 2)
+
+
+
+
+# recursive Int maxPow2
+_maxPow2_Int   x: Int,   currPow2: Int =
+  if currPow2 * 2 > x then
+    currPow2
+  else
+    _maxPow2_Int   x (currPow2 * 2)
+
+# recursive Float maxPow2
+_maxPow2_Float x: Float, currPow2: Int =
+  if currPow2 * 2 > x then
+    currPow2
+  else
+    _maxPow2_Float x (currPow2 * 2)
+
+# Int | Float and recursive handler for maxPow2 (largest power of 2 <= a number)
+maxPow2 num: Int | Float = match num : Int | Float
+  to num_I: Int   => _maxPow2_Int   num_I 1
+  to num_F: Float => _maxPow2_Float num_F 1
+
+
+
+
+# recursive Int maxPow10
+_maxPow10_Int   x: Int,   currPow10: Int =
+  if currPow10 * 10 > x then
+    currPow10
+  else
+    _maxPow10_Int   x (currPow10 * 10)
+
+# recursive Float maxPow10
+_maxPow10_Float x: Float, currPow10: Int =
+  if currPow10 * 10 > x then
+    currPow10
+  else
+    _maxPow10_Float x (currPow10 * 10)
+
+
+# Int | Float and recursive handler for maxPow10 (largest power of 10 <= a number)
+maxPow10 num: Int | Float = match num : Int | Float
+  to num_I: Int   => _maxPow10_Int   num_I 1
+  to num_F: Float => _maxPow10_Float num_F 1
+
+
+
+
+# Int abs
+_abs_Int   x: Int   =
+  if x > 0 then
+    x
+  else
+    (0-x)
+
+# Float abs
+_abs_Float x: Float =
+  if x > 0 then
+    x
+  else
+    (0-x)
+
+
+# Int | Float handler for abs
+abs num: Int | Float = match num : Int | Float
+  to num_I: Int   => _abs_Int   num_I
+  to num_F: Float => _abs_Float num_F
+
+
+
+
+# recursive Int floor
+_floor_Int   numIn: Int,   numOut: Int =
+  if numIn < 1 and numIn >= 0 then
+    numOut
+  else
+    if numIn > 0 then
+      _floor_Int   (numIn - (maxPow2 (abs numIn))) (numOut + (maxPow2 (abs numIn)))
+    else
+      _floor_Int   (numIn + (maxPow2 (abs numIn))) (numOut - (maxPow2 (abs numIn)))
+
+# recursive Float floor
+_floor_Float numIn: Float, numOut: Int =
+  if numIn < 1 and numIn >= 0 then
+    numOut
+  else
+        if numIn > 0 then
+      _floor_Float (numIn - (maxPow2 (abs numIn))) (numOut + (maxPow2 (abs numIn)))
+    else
+      _floor_Float (numIn + (maxPow2 (abs numIn))) (numOut - (maxPow2 (abs numIn)))
+
+
+# Int | Float and recursive handler for floor
+floor num: Int | Float = match num : Int | Float
+  to num_I: Int   => _floor_Int   num_I 0
+  to num_F: Float => _floor_Float num_F 0
+
+
+
+
+# recursive Int sqrt
+_sqrt_Int   num: Int,   guess: Float  =
+  if _abs_Float (guess * guess - num) < (num * 0.000000000001) then
+    guess
+  else
+    _sqrt_Int   num  ((guess + (num / guess)) / 2)
+
+# recursive Float sqrt
+_sqrt_Float num: Float, guess: Float  =
+  if _abs_Float (guess * guess - num) < (num * 0.000000000001) then
+    guess
+  else
+    _sqrt_Float num  ((guess + (num / guess)) / 2)
+
+
+# Int | Float and recursive handler for sqrt
+sqrt num: Int | Float = match num : Int | Float
+  to num_I: Int   => _sqrt_Int   num_I 1.0
+  to num_F: Float => _sqrt_Float num_F 1.0
+
+
+
+
+# Int, Int pow
+_pow_Int_Int     x: Int,   y: Int   =
+  if y <= 0 then
+    1
+  else
+    x * (_pow_Int_Int     x (y-1))
+
+# Int, Float pow
+_pow_Int_Float   x: Int,   y: Float =
+  if y < 1 then
+    if y <= 0.000001 then
+      1.0
+    else
+      (rtPow2 (x+0.0) (minDivNumPow2 y 1)) * (_pow_Int_Float   x (y - (1.0 / (minDivNumPow2 y 1))))
+  else
+    x * (_pow_Int_Float   x (y-1))
+
+# Float, Int pow
+_pow_Float_Int   x: Float, y: Int   =
+  if y <= 0 then
+    1.0
+  else
+    x * (_pow_Float_Int   x (y-1))
+
+# Float, Float pow
+_pow_Float_Float x: Float, y: Float =
+  if y < 1 then
+    if y <= 0.00001 then
+      1.0
+    else
+      (rtPow2 x       (minDivNumPow2 y 1)) * (_pow_Float_Float x (y - (1.0 / (minDivNumPow2 y 1))))
+  else
+    x * (_pow_Float_Float x (y-1))
+
+
+# Int, Int | Float handler for pow
+_pow_Int_   base_I: Int,   exponent: Int | Float = match exponent : Int | Float
+  to exp_I: Int    => _pow_Int_Int     base_I exp_I
+  to exp_F: Float  => _pow_Int_Float   base_I exp_F
+
+# Float, Int | Float handler for pow
+_pow_Float_ base_F: Float, exponent: Int | Float = match exponent : Int | Float
+  to exp_I: Int    => _pow_Float_Int   base_F exp_I
+  to exp_F: Float  => _pow_Float_Float base_F exp_F
+
+
+# Int | Float, Int | Float handler for pow
+pow base: Int | Float, exponent: Int | Float = match base : Int | Float
+  to base_I: Int   => _pow_Int_   base_I exponent
+  to base_F: Float => _pow_Float_ base_F exponent
+
+
+
+
+# recursive Int root
+_root_Int   num: Int,   root: Int, guess: Float =
+  if _abs_Float ((_pow_Float_Int guess root) - num) < (num * 0.000000000001) then
+    guess
+  else
+    _root_Int   num root (((guess * (root - 1)) + (num / (_pow_Float_Int guess (root - 1)))) / root)
+
+# recursive Float root
+_root_Float num: Float, root: Int, guess: Float =
+  if _abs_Float ((_pow_Float_Int guess root) - num) < (num * 0.000000000001) then
+    guess
+  else
+    _root_Float num root (((guess * (root - 1)) + (num / (_pow_Float_Int guess (root - 1)))) / root)
+
+
+# Int | Float and recursive handler for root
+root num: Int | Float, root: Int = match num : Int | Float
+  to num_I: Int   => _root_Int   num_I root 1.0
+  to num_F: Float => _root_Float num_F root 1.0
+
+
+
+
+# Removes the whole part of a number, only leaving the decimal
+removeWhole float: Float =
+  if float > 0 then
+    float - floor   float
+  else
+    float + floor (-float)
