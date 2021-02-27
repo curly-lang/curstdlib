@@ -1,0 +1,4 @@
+module Main
+import IO::Term
+
+main = putch 'a'

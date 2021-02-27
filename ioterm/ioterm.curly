@@ -1,0 +1,8 @@
+module IO::Term
+    ( putch : Char -> enum Ok
+    )
+
+extern "__curly_prim__putch"
+__prim__putch : Char -> enum Ok
+putch c: Char = __prim__putch c
+
