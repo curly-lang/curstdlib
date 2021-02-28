@@ -4,5 +4,7 @@ module IO::Term
 
 extern "__curly_prim__putch"
 __prim__putch : Char -> enum Ok
+
+@impure
 putch c: Char = __prim__putch c
 
