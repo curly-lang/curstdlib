@@ -1,0 +1,26 @@
+module Temp::Cons_Boxes
+  (
+    cons_S  : StringChar -> StringChar -> (StringChar -> StringChar -> StringChar)    -> StringChar  ,
+    car_S   : String                                                                  -> StringChar  ,
+    cdr_S   : String                                                                  -> StringChar  ,
+    reverse : String                                                                  -> String      
+  )
+
+
+type StringChar = Char | ((StringChar -> StringChar -> StringChar) -> StringChar)
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+cons_S x: StringChar, y: StringChar, f: StringChar -> StringChar -> StringChar = f x y
+
+truefn_S  x: StringChar, y: StringChar = x
+falsefn_S x: StringChar, y: StringChar = y
+
+car_S str: String = str truefn_S
+cdr_S str: String = str falsefn_S
+
+
+reverse_tail acc: String, str: StringChar = match str
+  to s: String => reverse_tail (cons_S (car_S s) acc) (cdr_S s)
+  to c: Char   => acc
+
+reverse str: String = reverse_tail (cons_S (car_S str) '\0') (cdr_S str)

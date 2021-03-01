@@ -1,0 +1,10 @@
+module Main
+import Temp::Cons_Boxes
+
+type StringChar = Char | ((StringChar -> StringChar -> StringChar) -> StringChar)
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+main =
+  debug (cons_S 'a' $ cons_S 'z' '\0');
+  debug (car_S (cons_S 'a' $ cons_S 'z' '\0'));
+  debug (car_S (reverse (cons_S 'a' $ cons_S 'z' '\0')))
