@@ -4,7 +4,17 @@ import Temp::Cons_Boxes
 type StringChar = Char | ((StringChar -> StringChar -> StringChar) -> StringChar)
 type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
+@pure
+extern "__curly_prim__get_uwu"
+__prim__get_uwu : ptr String
+
 main =
   debug (cons_S 'a' $ cons_S 'z' '\0');
   debug (car_S (cons_S 'a' $ cons_S 'z' '\0'));
-  debug (car_S (reverse (cons_S 'a' $ cons_S 'z' '\0')))
+  debug (car_S (reverse (cons_S 'a' $ cons_S 'z' '\0')));
+  let v = c_to_cons __prim__get_uwu
+  in
+    debug $ car_S v;
+    debug $ car_S $ cdr_S v;
+    debug $ car_S $ cdr_S $ cdr_S v;
+  enum Ok
