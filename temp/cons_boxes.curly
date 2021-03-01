@@ -4,11 +4,13 @@ module Temp::Cons_Boxes
     car_S       : StringChar                                                              -> StringChar  ,
     cdr_S       : StringChar                                                              -> StringChar  ,
     reverse     : String                                                                  -> String      ,
-    c_to_cons   : ptr String                                                              -> String
+    c_to_cons   : ptr String                                                              -> String      ,
+    cons_to_c   : String                                                                  -> ptr String  ,
+    free        : ptr String                                                              -> enum Ok
   )
 
 
-type StringChar = Char | ((StringChar -> StringChar -> StringChar) -> StringChar)
+type StringChar = Char | String
 type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
 cons_S x: StringChar, y: StringChar, f: StringChar -> StringChar -> StringChar = f x y
@@ -28,6 +30,13 @@ reverse_tail acc: String, str: StringChar = match str
 
 reverse str: String = reverse_tail (cons_S (car_S str) '\0') (cdr_S str)
 
+length_tail acc: Word, str: StringChar =
+    match str
+    to String => length_tail (acc + 1u) $ cdr_S str
+    to Char => acc
+
+length s: String = length_tail 0u s
+
 @pure
 extern "__curly_prim__getc"
 __prim__getc : ptr String -> Word -> Char
@@ -43,4 +52,28 @@ c_to_cons p: ptr String =
     let v = gets '\0' 0u p
     in match v
     to v: String => reverse v
+
+@pure
+extern "__curly_prim__str_with_cap"
+__prim__with_cap : Word -> ptr String
+
+@pure
+extern "__curly_prim__setc"
+__prim__setc : ptr String -> Word -> Char -> enum Ok
+
+setc acc: StringChar, i: Word, p: ptr String =
+    match acc
+    to String =>
+        __prim__setc p i (match car_S acc to c: Char => c);
+        setc (cdr_S acc) (i + 1u) p
+    to Char => p
+
+cons_to_c str: String =
+    let v = __prim__with_cap $ length str
+    in setc str 0u v
+
+@pure
+extern "__curly_prim__free"
+__prim__free : ptr String -> enum Ok
+free str: ptr String = __prim__free str
 

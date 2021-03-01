@@ -1,11 +1,29 @@
 #include <string.h>
+#include <stdint.h>
+#include <stdlib.h>
+#include <stdio.h>
 
-char __curly_prim__getc(char* str, unsigned long long i)
+char __curly_prim__getc(char* str, size_t i)
 {
     return str[i];
 }
 
-char* __curly_prim__get_uwu()
+char* __curly_prim__str_with_cap(size_t cap)
 {
-    return "uwu!";
+    return calloc(cap, sizeof(char));
+}
+
+void __curly_prim__setc(char* str, size_t i, char c)
+{
+    str[i] = c;
+}
+
+void __curly_prim__free(char* str)
+{
+    free(str);
+}
+
+void __curly_prim__print_str(char* str)
+{
+    printf("%s\n", str);
 }
