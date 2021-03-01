@@ -2,4 +2,4 @@ module Main
 import IO::Term
 
 @impure
-main = putch 'a'
+main = putch getch; putch '\n'; debug cols; debug rows

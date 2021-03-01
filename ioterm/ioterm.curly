@@ -1,6 +1,11 @@
 module IO::Term
-    ( putch : Char -> enum Ok
+    (
+      putch : Char -> enum Ok
+      getch :         Char
+      cols  :         Int
+      rows  :         Int
     )
+
 
 extern "__curly_prim__putch"
 __prim__putch : Char -> enum Ok
@@ -8,3 +13,22 @@ __prim__putch : Char -> enum Ok
 @impure
 putch c: Char = __prim__putch c
 
+
+extern "__curly_prim__getch"
+__prim__getch : Char
+
+@impure
+getch = __prim__getch
+
+extern "__curly_prim__cols"
+__prim__cols : Int
+
+@impure
+cols = __prim__cols
+
+
+extern "__curly_prim__rows"
+__prim__rows : Int
+
+@impure
+rows = __prim__rows
