@@ -8,10 +8,12 @@ type String = (StringChar -> StringChar -> StringChar) -> StringChar
 extern "__curly_prim__get_uwu"
 __prim__get_uwu : ptr String
 
-main =
-  debug (cons_S 'a' $ cons_S 'z' '\0');
-  debug (car_S (cons_S 'a' $ cons_S 'z' '\0'));
-  debug (car_S (reverse (cons_S 'a' $ cons_S 'z' '\0')));
+main = 
+  let str = cons_S 'a' $ cons_S 'z' '\0'
+  in
+  debug str;
+  debug (car_S str);
+  debug (car_S (reverse str));
   let v = c_to_cons __prim__get_uwu
   in
     debug $ car_S v;
