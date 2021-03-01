@@ -17,4 +17,6 @@ main =
     debug $ car_S v;
     debug $ car_S $ cdr_S v;
     debug $ car_S $ cdr_S $ cdr_S v;
+    debug $ car_S $ cdr_S $ cdr_S $ cdr_S v;
+    debug $ car_S $ cdr_S $ cdr_S $ cdr_S $ cdr_S v;
   enum Ok
