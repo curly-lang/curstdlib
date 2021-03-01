@@ -13,9 +13,10 @@ __prim__printf : ptr String -> enum Ok
 
 @impure
 main =
-    debug (cons_S 'a' $ cons_S 'z' '\0');
-    debug (car_S (cons_S 'a' $ cons_S 'z' '\0'));
-    debug (car_S (reverse (cons_S 'a' $ cons_S 'z' '\0')));
+    s := cons_S 'a' $ cons_S 'z' '\0';
+    debug s;
+    debug $ car_S s;
+    debug $ car_S $ reverse s;
     uwu := cons_S 'u' $ cons_S 'w' $ cons_S 'u' '\0';
     uwuptr := cons_to_c uwu;
     __prim__printf uwuptr;
