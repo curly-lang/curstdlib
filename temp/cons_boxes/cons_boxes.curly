@@ -6,8 +6,8 @@ module Temp::Cons_Boxes
     reverse     : String                                                                  -> String      ,
     c_to_cons   : ptr String                                                              -> String      ,
     cons_to_c   : String                                                                  -> ptr String  ,
-    free        : ptr String                                                              -> enum Ok
-    toChar      : StringChar                                                              -> Char
+    free        : ptr String                                                              -> enum Ok     ,
+    toChar      : StringChar                                                              -> Char        
   )
 
 
@@ -83,4 +83,4 @@ free str: ptr String = __prim__free str
 @pure
 toChar c: StringChar = match c : Char | String
   to char: Char   => char
-  to str : String => toChar $ car_S c
+  to str : String => toChar $ car_S str

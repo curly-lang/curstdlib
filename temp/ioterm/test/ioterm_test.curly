@@ -1,14 +1,14 @@
 module Main
 import IO::Term as IOTerm
-# import Temp::Cons_Boxes as Cons
-# import Temp::IO::Term as IOTerm_T
+import Temp::Cons_Boxes as Cons
+import Temp::IO::Term as IOTerm_T
 
-# type StringChar = Char | String
-# type String = (StringChar -> StringChar -> StringChar) -> StringChar
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
 @impure
 main = 
-  let i = 0
+  let i = IOTerm_T::input
   in
-    IOTerm::putch 'a' ;
-    IOTerm::putch 'b'
+    IOTerm::putch $ Cons::toChar $ Cons::car_S i;
+    IOTerm::putch $ Cons::toChar $ Cons::cdr_S i
