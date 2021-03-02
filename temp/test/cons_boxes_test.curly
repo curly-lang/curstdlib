@@ -1,5 +1,5 @@
 module Main
-import Temp::Cons_Boxes
+import Temp::Cons_Boxes (*)
 
 type StringChar = Char | String
 type String = (StringChar -> StringChar -> StringChar) -> StringChar

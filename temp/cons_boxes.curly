@@ -35,7 +35,7 @@ length_tail acc: Word, str: StringChar =
     to String => length_tail (acc + 1u) $ cdr_S str
     to Char => acc
 
-length s: String = length_tail 0u s
+length = length_tail 0u
 
 @pure
 extern "__curly_prim__getc"
@@ -63,9 +63,10 @@ __prim__setc : ptr String -> Word -> Char -> enum Ok
 
 setc acc: StringChar, i: Word, p: ptr String =
     match acc
-    to String =>
+    to String => (
         __prim__setc p i (match car_S acc to c: Char => c);
         setc (cdr_S acc) (i + 1u) p
+    )
     to Char => p
 
 cons_to_c str: String =
