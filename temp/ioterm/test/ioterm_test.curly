@@ -1,0 +1,14 @@
+module Main
+import IO::Term as IOTerm
+# import Temp::Cons_Boxes as Cons
+# import Temp::IO::Term as IOTerm_T
+
+# type StringChar = Char | String
+# type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+@impure
+main = 
+  let i = 0
+  in
+    IOTerm::putch 'a' ;
+    IOTerm::putch 'b'

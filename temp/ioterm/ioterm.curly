@@ -1,0 +1,15 @@
+module Temp::IO::Term
+  (
+    input : String
+  )
+
+import IO::Term as IOTerm
+import Temp::Cons_Boxes as Cons
+
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+
+@impure
+input = Cons::cons_S IOTerm::getch IOTerm::getch
