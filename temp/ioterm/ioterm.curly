@@ -13,16 +13,16 @@ type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
 
 @impure
-_input =
+_input acc: StringChar =
   let c = IOTerm::getch
   in
     if c == '\n' then
-      '\0'
+      acc
     else
-      Cons::cons_S c _input
+      _input $ Cons::cons_S c acc
 
 @impure
-input = Cons::toString $ _input
+input = Cons::reverse $ Cons::toString $ _input '\0'
 
 
 @impure
