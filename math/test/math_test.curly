@@ -11,4 +11,5 @@ main =
   debug (Math::pow            3      5);
   debug (Math::root           16     4);
   debug (Math::removeWhole  (-10.4)   );
-  debug (Math::removeWhole    10.4    )
+  debug (Math::removeWhole    10.4    );
+  enum Ok
