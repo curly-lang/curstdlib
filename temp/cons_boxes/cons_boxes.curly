@@ -88,6 +88,6 @@ toChar   c: StringChar = match c : Char | String
 
 
 @pure
-toString c: StringChar = match c : Char | String
+toString c: StringChar = match c
   to char: Char   => toString $ cons_S char '\0'
   to str : String => str

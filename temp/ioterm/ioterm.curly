@@ -26,7 +26,7 @@ input = Cons::toString $ _input
 
 
 @impure
-print m: StringChar = match m : Char | String
+print m: StringChar = match m
   to c: Char   =>
     let _ = IOTerm::putch c
     in
