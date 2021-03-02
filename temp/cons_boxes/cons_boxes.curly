@@ -19,9 +19,9 @@ truefn_S  x: StringChar, y: StringChar = x
 falsefn_S x: StringChar, y: StringChar = y
 
 car_S str: StringChar = match str
-    to s: String => s truefn_S
+  to s: String => s truefn_S
 cdr_S str: StringChar = match str
-    to s: String => s falsefn_S
+  to s: String => s falsefn_S
 
 
 reverse_tail acc: String, str: StringChar = match str
@@ -31,9 +31,9 @@ reverse_tail acc: String, str: StringChar = match str
 reverse str: String = reverse_tail (cons_S (car_S str) '\0') (cdr_S str)
 
 length_tail acc: Word, str: StringChar =
-    match str
-    to String => length_tail (acc + 1u) $ cdr_S str
-    to Char => acc
+  match str
+  to String => length_tail (acc + 1u) $ cdr_S str
+  to Char => acc
 
 length = length_tail 0u
 
@@ -42,16 +42,16 @@ extern "__curly_prim__getc"
 __prim__getc : ptr String -> Word -> Char
 
 gets acc: StringChar, i: Word, p: ptr String =
-    let c = __prim__getc p i
-    in if c == '\0' then
-        acc
-    else
-        gets (cons_S c acc) (i + 1u) p
+  let c = __prim__getc p i
+  in if c == '\0' then
+    acc
+  else
+    gets (cons_S c acc) (i + 1u) p
 
 c_to_cons p: ptr String =
-    let v = gets '\0' 0u p
-    in match v
-    to v: String => reverse v
+  let v = gets '\0' 0u p
+  in match v
+  to v: String => reverse v
 
 @pure
 extern "__curly_prim__str_with_cap"
@@ -62,16 +62,16 @@ extern "__curly_prim__setc"
 __prim__setc : ptr String -> Word -> Char -> enum Ok
 
 setc acc: StringChar, i: Word, p: ptr String =
-    match acc
-    to String => (
-        __prim__setc p i (match car_S acc to c: Char => c);
-        setc (cdr_S acc) (i + 1u) p
-    )
-    to Char => p
+  match acc
+  to String => (
+    __prim__setc p i (match car_S acc to c: Char => c);
+    setc (cdr_S acc) (i + 1u) p
+  )
+  to Char => p
 
 cons_to_c str: String =
-    let v = __prim__with_cap $ length str
-    in setc str 0u v
+  let v = __prim__with_cap $ length str
+  in setc str 0u v
 
 @pure
 extern "__curly_prim__free"
