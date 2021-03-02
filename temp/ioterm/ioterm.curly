@@ -1,6 +1,7 @@
 module Temp::IO::Term
   (
-    input : String
+    input :                 String
+    print : StringChar   -> enum Ok
   )
 
 import IO::Term as IOTerm
@@ -12,4 +13,26 @@ type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
 
 @impure
-input = Cons::cons_S IOTerm::getch IOTerm::getch
+_input =
+  let c = IOTerm::getch
+  in
+    if c == '\n' then
+      '\0'
+    else
+      Cons::cons_S c _input
+
+@impure
+input = Cons::toString $ _input
+
+
+@impure
+print m: StringChar = match m : Char | String
+  to c: Char   =>
+    let _ = IOTerm::putch c
+    in
+      IOTerm::putch '\n'
+
+  to s: String =>
+    let _ = IOTerm::putch $ Cons::toChar $ Cons::car_S s
+    in
+      print $ Cons::cdr_S m

@@ -10,5 +10,4 @@ type String = (StringChar -> StringChar -> StringChar) -> StringChar
 main = 
   let i = IOTerm_T::input
   in
-    IOTerm::putch $ Cons::toChar $ Cons::car_S i;
-    IOTerm::putch $ Cons::toChar $ Cons::cdr_S i
+    IOTerm_T::print i
