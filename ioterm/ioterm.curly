@@ -47,7 +47,7 @@ extern "curly_prim__chr"
 __prim__chr : Int -> Char
 
 @pure
-int2Char i: Int = __prim__chr i
+chr i: Int = __prim__chr i
 
 
 @impure
