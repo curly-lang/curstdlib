@@ -1,10 +1,13 @@
 module IO::Term
-    (
-      putch : Char -> enum Ok
-      getch :         Char
-      cols  :         Int
-      rows  :         Int
-    )
+  (
+    putch   : Char       -> enum Ok
+    getch   :               Char
+    cols    :               Int
+    rows    :               Int
+    chr     : Int        -> Char
+    putDig  : Int        -> enum Ok
+    putInt  : Int        -> enum Ok
+  )
 
 import Math
 
@@ -43,7 +46,7 @@ rows = __prim__rows
 
 
 @pure
-extern "curly_prim__chr"
+extern "__curly_prim__chr"
 __prim__chr : Int -> Char
 
 @pure
@@ -51,24 +54,27 @@ chr i: Int = __prim__chr i
 
 
 @impure
-putDig d: Int = putch $ chr ((d + 48) % 10)
+putDig d: Int = putch $ chr $ 48 + (d % 10)
 
 
 
 @impure
-putInt int: Int =
+_putInt int: Int, targetDigit: Int =
   if int <= 0 then
     (
       putch '-';
-      putInt (-int)
+      _putInt (-int) targetDigit
     )
   else
-    if int < 10 then
+    if targetDigit == 1 then
       putDig int
     else
-      let mpt = (Math::maxPow10 int)
+      let mpt = targetDigit
           msd = Math::floor (int / mpt)
       in (
         putDig msd;
-        putInt (int % mpt)
+        _putInt (int % mpt) (targetDigit / 10)
       )
+
+@impure
+putInt int: Int = _putInt int $ Math::maxPow10 $ Math::abs int

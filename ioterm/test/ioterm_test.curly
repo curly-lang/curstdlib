@@ -2,4 +2,4 @@ module Main
 import IO::Term as IOTerm
 
 @impure
-main = IOTerm::putch IOTerm::getch; IOTerm::putch '\n'; debug IOTerm::cols; debug IOTerm::rows
+main = IOTerm::putch IOTerm::getch; IOTerm::putch '\n'; debug IOTerm::cols; debug IOTerm::rows; IOTerm::putDig 4; IOTerm::putch '\n'; IOTerm::putInt $ -1306947; IOTerm::putch '\n'

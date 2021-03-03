@@ -4,7 +4,7 @@ AR=ar
 ARFLAGS=-rc
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
-CURLYFLAGS=-L.. -lioterm -L../../math -lmath
+CURLYFLAGS=-L.. -lioterm
 
 libs: ioterm.c
 	cd ../math; make
