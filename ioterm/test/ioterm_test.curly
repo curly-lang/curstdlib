@@ -1,5 +1,5 @@
 module Main
-import IO::Term
+import IO::Term as IOTerm
 
 @impure
-main = putch getch; putch '\n'; debug cols; debug rows
+main = IOTerm::putch IOTerm::getch; IOTerm::putch '\n'; debug IOTerm::cols; debug IOTerm::rows

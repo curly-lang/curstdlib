@@ -9,7 +9,7 @@ void __curly_prim__putch(char c)
 
 char __curly_prim__getch()
 {
-    return getchar();
+    return (char) getchar();
 }    
 
 
@@ -25,4 +25,10 @@ int __curly_prim__rows()
 {
     ioctl( 0, TIOCGWINSZ, &sz );
     return sz.ws_row;
+}
+
+
+char __curly_prim__chr(int i)
+{
+    return (char) i;
 }
