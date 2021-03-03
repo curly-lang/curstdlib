@@ -1,12 +1,13 @@
 module IO::Term
   (
-    putch   : Char       -> enum Ok
-    getch   :               Char
-    cols    :               Int
-    rows    :               Int
-    chr     : Int        -> Char
-    putDig  : Int        -> enum Ok
-    putInt  : Int        -> enum Ok
+    putch    : Char              -> enum Ok
+    getch    :                      Char
+    cols     :                      Int
+    rows     :                      Int
+    chr      : Int               -> Char
+    putDig   : Int               -> enum Ok
+    putInt   : Int               -> enum Ok
+    putFloat : Float -> Int      -> enum Ok
   )
 
 import Math
@@ -78,3 +79,28 @@ _putInt int: Int, targetDigit: Int =
 
 @impure
 putInt int: Int = _putInt int $ Math::maxPow10 $ Math::abs int
+
+
+@impure
+putFloat float: Float, places: Int =
+  if (Math::floor $ Math::abs float) >= 1 then
+    if float > 0 then
+      (
+        putInt    (Math::floor    float);
+        putch '.';
+        putFloat  (Math::removeWhole float) places
+      )
+    else
+      (
+        putInt $ -(Math::floor $ -float);
+        putch '.';
+        putFloat (-Math::removeWhole float) places
+      )
+  else
+    if places < 1 then
+      enum Ok
+    else
+      (
+        putDig $ Math::floor $ 10*float;
+        putFloat (Math::removeWhole (10*float)) (places-1)
+      )
