@@ -97,8 +97,11 @@ putFloat float: Float, places: Int =
         putFloat (-Math::removeWhole float) places
       )
   else
-    if places < 1 then
-      enum Ok
+    if places < 2 then
+      if places == 1 then
+        putDig $ Math::floor (10*float + 0.5)
+      else
+        enum Ok
     else
       (
         putDig $ Math::floor $ 10*float;
