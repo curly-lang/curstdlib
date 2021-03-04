@@ -2,7 +2,8 @@ module IO::Curl
     ( global_init : enum Ok | enum Err
     , global_cleanup : enum Ok
     , easy_init : ptr EasyCurl
-    , set_url : ptr EasyCurl -> String -> enum Ok | enum Err
+    , easy_cleanup : ptr EasyCurl -> enum Ok
+    , send_str : ptr EasyCurl -> String -> String -> enum Ok | enum Err
     )
 import Temp::Cons_Boxes as Cons
 
@@ -31,27 +32,64 @@ __prim__curl_easy_init : ptr EasyCurl
 @impure
 easy_init = __prim__curl_easy_init
 
+extern "curl_easy_cleanup"
+__prim__curl_easy_cleanup : ptr EasyCurl -> enum Ok
+
+@impure
+easy_cleanup curl: ptr EasyCurl = __prim__curl_easy_cleanup curl
+
 extern "curl_easy_setopt"
 __prim__curl_easy_setopt : ptr EasyCurl -> Int -> ptr String -> Int
 
+extern "curl_easy_setopt_int"
+__prim__curl_easy_setopt_int : ptr EasyCurl -> Int -> Int -> Int
+
+extern "curl_easy_setopt_word"
+__prim__curl_easy_setopt_word : ptr EasyCurl -> Int -> Word -> Int
+
+extern "curl_easy_perform"
+__prim__curl_easy_perform : ptr EasyCurl -> Int
+
+extern "__curlopt_upload"
+__prim__curlopt_upload : Int
+
+extern "__curlopt_url"
+__prim__curlopt_url : Int
+
+extern "__curlopt_postfield"
+__prim__curlopt_postfield : Int
+
+extern "__curlopt_postfieldsize"
+__prim__curlopt_postfieldsize : Int
+
+extern "__curlopt_verbose"
+__prim__curlopt_verbose : Int
+
+extern "__curl_setjson"
+__prim__curl_setjson : ptr EasyCurl -> enum Ok
+
 @impure
-set_url curl: ptr EasyCurl, url: String =
-    let stat =  str  := Cons::cons_to_c url;
-                stat := __prim__curl_easy_setopt curl 10002 str;
-                Cons::free str;
+send_str curl: ptr EasyCurl, url: String, data: String =
+                # set url
+    let stat =  url := Cons::cons_to_c url;
+                __prim__curl_easy_setopt curl __prim__curlopt_url url;
+
+                # set data
+                __prim__curl_easy_setopt_word curl __prim__curlopt_postfieldsize $ Cons::length data - 1u;
+                data  := Cons::cons_to_c data;
+                __prim__curl_easy_setopt curl __prim__curlopt_postfield data;
+                __prim__curl_easy_setopt_int curl __prim__curlopt_verbose 1;
+                __prim__curl_setjson curl;
+
+                # upload
+                stat := __prim__curl_easy_perform curl;
+
+                # cleanup
+                Cons::free url;
+                Cons::free data;
                 stat
     in if stat == 0 then
         enum Ok
     else
         enum Err
 
-@impure
-send_str curl: ptr EasyCurl, data: String =
-    let stat =  str  := Cons::cons_to_c data;
-                stat := __prim__curl_easy_setopt curl 10009 str;
-                Cons::free str;
-                stat
-    in if stat == 0 then
-        enum Ok
-    else
-        enum Err
