@@ -8,7 +8,8 @@ module Temp::Cons_Boxes
     cons_to_c   : String                                                                  -> ptr String  ,
     free        : ptr String                                                              -> enum Ok     ,
     toChar      : StringChar                                                              -> Char        ,
-    toString    : StringChar                                                              -> String      
+    toString    : StringChar                                                              -> String      ,
+    length      : StringChar                                                              -> Word
   )
 
 

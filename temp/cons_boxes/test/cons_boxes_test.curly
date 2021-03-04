@@ -17,7 +17,7 @@ main =
   debug s;
   debug $ car_S s;
   debug $ car_S $ reverse s;
-  uwu := cons_S 'u' $ cons_S 'w' $ cons_S 'u' '\0';
+  uwu := "uwu";
   uwuptr := cons_to_c uwu;
   __prim__printf uwuptr;
   v := c_to_cons uwuptr;
