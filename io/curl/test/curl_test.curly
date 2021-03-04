@@ -1,0 +1,13 @@
+module Main
+import IO::Curl as Curl
+import Temp::Cons_Boxes (cons_S)
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+@impure
+main =
+    debug Curl::global_init;
+    curl := debug Curl::easy_init;
+    debug $ Curl::set_url curl "https://discord.com/api/webhooks/817036345549127730/Pe0CgJC_N2FvuP3PWeBQJT8HUpv2b6fYKei2HInaWTahDV22Z6eKPVIUWNuHGqnTMZ7k";
+    Curl::global_cleanup

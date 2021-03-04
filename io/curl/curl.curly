@@ -1,0 +1,57 @@
+module IO::Curl
+    ( global_init : enum Ok | enum Err
+    , global_cleanup : enum Ok
+    , easy_init : ptr EasyCurl
+    , set_url : ptr EasyCurl -> String -> enum Ok | enum Err
+    )
+import Temp::Cons_Boxes as Cons
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+extern "curl_global_init"
+__prim__curl_global_init : Int -> Int
+
+@impure
+global_init =
+    if __prim__curl_global_init 3 == 0 then
+        enum Ok
+    else
+        enum Err
+
+extern "curl_global_cleanup"
+__prim__curl_global_cleanup : enum Ok
+
+@impure
+global_cleanup = __prim__curl_global_cleanup
+
+extern "curl_easy_init"
+__prim__curl_easy_init : ptr EasyCurl
+
+@impure
+easy_init = __prim__curl_easy_init
+
+extern "curl_easy_setopt"
+__prim__curl_easy_setopt : ptr EasyCurl -> Int -> ptr String -> Int
+
+@impure
+set_url curl: ptr EasyCurl, url: String =
+    let stat =  str  := Cons::cons_to_c url;
+                stat := __prim__curl_easy_setopt curl 10002 str;
+                Cons::free str;
+                stat
+    in if stat == 0 then
+        enum Ok
+    else
+        enum Err
+
+@impure
+send_str curl: ptr EasyCurl, data: String =
+    let stat =  str  := Cons::cons_to_c data;
+                stat := __prim__curl_easy_setopt curl 10009 str;
+                Cons::free str;
+                stat
+    in if stat == 0 then
+        enum Ok
+    else
+        enum Err
