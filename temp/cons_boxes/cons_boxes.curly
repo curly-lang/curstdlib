@@ -70,10 +70,13 @@ setc acc: StringChar, i: Word, p: ptr String =
     __prim__setc p i (match car_S acc to c: Char => c);
     setc (cdr_S acc) (i + 1u) p
   )
-  to Char => p
+  to Char => (
+    __prim__setc p i '\0';
+    p
+  )
 
 cons_to_c str: String =
-  let v = __prim__with_cap $ length str
+  let v = __prim__with_cap $ length str + 1u
   in setc str 0u v
 
 @pure
