@@ -1,19 +1,24 @@
-CC=gcc
-CFLAGS=-c
-AR=ar
-ARFLAGS=-rc
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
-CURLYFLAGS=-L.. -lcurl -L../../../temp/cons_boxes/ -lcons
+
+STDLIB=~/curstdlib
+LIBNAME=io-curl
+
+LIBTEMP-CONS_BOXES=-L$(STDLIB)/temp/cons_boxes/.lib -ltemp-cons_boxes -m $(STDLIB)/temp/cons_boxes/.lib/temp-cons_boxes.mod.curly
+
+COMPLIBFLAGS=-L.. -l$(LIBNAME) $(LIBTEMP-CONS_BOXES)
+USELIBFLAGS=-L../.lib -l$(LIBNAME) -m .lib/$(LIBNAME).mod.curly
 
 libs:
-	cd ../../math; make
-	cd ../../temp/cons_boxes; make
-	# $(CC) $(CFLAGS) $?
-	# $(AR) $(ARFLAGS) libioterm.a ioterm.o
+	cd $(STDLIB)/temp/cons_boxes; make
+
+	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAME).curly
+	rm -r .lib &> /dev/null; mkdir .lib
+	cp .build/$(LIBNAME).mod.curly .lib/$(LIBNAME).mod.curly
+	cp .build/lib$(LIBNAME).a      .lib/lib$(LIBNAME).a
 
 all: libs
-	$(CURLYC_DEBUG) build $(CURLYFLAGS) curl.curly ../../temp/cons_boxes/temp-cons_boxes.curly test/curl_test.curly
+	$(CURLYC_DEBUG) build $(CURLYFLAGS) test/$(LIBNAME)--test.curly
 
 run: all
 	./.build/main
