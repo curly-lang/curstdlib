@@ -6,11 +6,15 @@ type StringChar = Char | String
 type String = (StringChar -> StringChar -> StringChar) -> StringChar
 
 @impure
+wrap_gtk_quit _: ptr GtkWidget, _: ptr GPointer = gtk_main_quit
+
+@impure
 main =
     debug gtk_init;
     window := debug gtk_window_new;
     button := gtk_button_new_with_label "uwu";
     gtk_container_add window button;
+    on_destroy window wrap_gtk_quit;
     debug $ gtk_widget_show_all window;
     gtk_main
 

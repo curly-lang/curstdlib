@@ -6,6 +6,7 @@ module IO::GTK
     , gtk_main : enum Ok
     , gtk_container_add : ptr GtkWidget -> ptr GtkWidget -> enum Ok
     , gtk_main_quit : enum Ok
+    , on_destroy : ptr GtkWidget -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> enum Ok
     )
 import Temp::Cons_Boxes as Cons
 import Temp::Cons_Boxes (cons_S)
