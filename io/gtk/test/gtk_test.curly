@@ -1,0 +1,17 @@
+module Main
+import IO::GTK (*)
+import Temp::Cons_Boxes (cons_S)
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+@impure
+main =
+    debug gtk_init;
+    window := debug gtk_window_new;
+    button := gtk_button_new_with_label "uwu";
+    gtk_container_add window button;
+    debug $ gtk_widget_show_all window;
+    gtk_main
+
+
