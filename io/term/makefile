@@ -1,28 +1,25 @@
 CC=gcc
 CFLAGS=-c
-AR=ar
-ARFLAGS=-rc
 
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
 
 STDLIB=~/curstdlib
-LIBNAME=io-term
+LIBNAME=IO::Term
+LIBNAMEREDUCED=io-term
 
-LIBMATH=-L$(STDLIB)/math/.lib -lmath -m $(STDLIB)/math/.lib/math.mod.curly
+LIBMATH=-m $(STDLIB)/math/.lib/Math.curlylib
 
-COMPLIBFLAGS=--lib -o $(LIBNAME) -L.. -l$(LIBNAME) $(LIBMATH)
-USELIBFLAGS=-L../.lib -l$(LIBNAME) -m .lib/$(LIBNAME).mod.curly
+COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o $(LIBMATH)
+USELIBFLAGS=-m .lib/$(LIBNAME).curlylib
 
-libs: io-term.c
+libs: $(LIBNAMEREDUCED).c
 	cd $(STDLIB)/math; make
-	$(CC) $(CFLAGS) $?
-	$(AR) $(ARFLAGS) lib$(LIBNAME).a $(LIBNAME).o
-	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) io-term.curly
+	$(CC) $(CFLAGS) $? -o $(LIBNAME).o
+	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
 	rm -r .lib &> /dev/null; mkdir .lib
-	cp .build/$(LIBNAME).mod.curly .lib/$(LIBNAME).mod.curly
-	cp .build/lib$(LIBNAME).a      .lib/lib$(LIBNAME).a
+	cp .build/$(LIBNAME).curlylib .lib/$(LIBNAME).curlylib 
 all: libs
-	$(CURLYC_DEBUG) build $(USELIBFLAGS) test/$(LIBNAME)--test.curly
+	$(CURLYC_DEBUG) build $(USELIBFLAGS) test/$(LIBNAMEREDUCED)--test.curly
 run: all
 	./.build/main
