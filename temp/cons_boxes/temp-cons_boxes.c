@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
+
 char __curly_prim__getc(char* str, size_t i)
 {
     return str[i];
