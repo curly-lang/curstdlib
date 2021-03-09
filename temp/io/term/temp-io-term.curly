@@ -27,10 +27,8 @@ input = Cons::reverse $ Cons::toString $ _input '\0'
 
 @impure
 print m: StringChar = match m
-  to c: Char   => (
-    IOTerm::putch c;
-    IOTerm::putch '\n'
-  )
+  to c: Char   =>
+	IOTerm::putch '\n'
 
   to s: String => (
     IOTerm::putch $ Cons::toChar $ Cons::car_S s;
