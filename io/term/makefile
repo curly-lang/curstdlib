@@ -4,20 +4,21 @@ CFLAGS=-c
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
 
-LIBNAME=Temp::Cons_Boxes
-LIBNAMEREDUCED=temp-cons_boxes
+STDLIB=~/curstdlib
+LIBNAME=IO::Term
+LIBNAMEREDUCED=io-term
 
-COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o
-USELIBFLAGS=-l $(LIBNAME).o $(LIBNAMEREDUCED).curly
+LIBMATH=-m $(STDLIB)/math/.lib/Math.curlylib
 
+COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o $(LIBMATH)
+USELIBFLAGS=-m .lib/$(LIBNAME).curlylib
 
 libs: $(LIBNAMEREDUCED).c
+	cd $(STDLIB)/math; make
 	$(CC) $(CFLAGS) $? -o $(LIBNAME).o
-
 	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
-
-	rm -r .lib &> /dev/null; mkdir .lib
-	cp .build/$(LIBNAME).curlylib      .lib/$(LIBNAME).curlylib
+	rm -r .lib; mkdir .lib
+	cp .build/$(LIBNAME).curlylib .lib/$(LIBNAME).curlylib 
 
 all: libs
 	$(CURLYC_DEBUG) build $(USELIBFLAGS) test/$(LIBNAMEREDUCED)--test.curly

@@ -75,7 +75,7 @@ send_str curl: ptr EasyCurl, url: String, data: String =
                 __prim__curl_easy_setopt curl __prim__curlopt_url url;
 
                 # set data
-                __prim__curl_easy_setopt_word curl __prim__curlopt_postfieldsize $ Cons::length data;
+                __prim__curl_easy_setopt_word curl __prim__curlopt_postfieldsize $ Cons::length data - 1u;
                 data  := Cons::cons_to_c data;
                 __prim__curl_easy_setopt curl __prim__curlopt_postfield data;
                 __prim__curl_easy_setopt_int curl __prim__curlopt_verbose 1;

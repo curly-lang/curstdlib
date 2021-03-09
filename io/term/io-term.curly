@@ -1,0 +1,109 @@
+module IO::Term
+  (
+    putch    : Char              -> enum Ok
+    getch    :                      Char
+    cols     :                      Int
+    rows     :                      Int
+    chr      : Int               -> Char
+    putDig   : Int               -> enum Ok
+    putInt   : Int               -> enum Ok
+    putFloat : Float -> Int      -> enum Ok
+  )
+
+import Math
+
+@impure
+extern "__curly_prim__putch"
+__prim__putch : Char -> enum Ok
+
+@impure
+putch c: Char = __prim__putch c
+
+
+@impure
+extern "__curly_prim__getch"
+__prim__getch : Char
+
+@impure
+getch = __prim__getch
+
+
+
+@impure
+extern "__curly_prim__cols"
+__prim__cols : Int
+
+@impure
+cols = __prim__cols
+
+
+@impure
+extern "__curly_prim__rows"
+__prim__rows : Int
+
+@impure
+rows = __prim__rows
+
+
+
+@pure
+extern "__curly_prim__chr"
+__prim__chr : Int -> Char
+
+@pure
+chr i: Int = __prim__chr i
+
+
+@impure
+putDig d: Int = putch $ chr $ 48 + (d % 10)
+
+
+
+@impure
+_putInt int: Int, targetDigit: Int =
+  if int <= 0 then
+    (
+      putch '-';
+      _putInt (-int) targetDigit
+    )
+  else
+    if targetDigit == 1 then
+      putDig int
+    else
+      let mpt = targetDigit
+          msd = Math::floor (int / mpt)
+      in (
+        putDig msd;
+        _putInt (int % mpt) (targetDigit / 10)
+      )
+
+@impure
+putInt int: Int = _putInt int $ Math::maxPow10 $ Math::abs int
+
+
+@impure
+putFloat float: Float, places: Int =
+  if (Math::floor $ Math::abs float) >= 1 then
+    if float > 0 then
+      (
+        putInt    (Math::floor    float);
+        putch '.';
+        putFloat  (Math::removeWhole float) places
+      )
+    else
+      (
+        putInt $ -(Math::floor $ -float);
+        putch '.';
+        putFloat (-Math::removeWhole float) places
+      )
+  else
+    if places < 2 then
+      if places == 1 then
+        putDig $ Math::floor (10*float + 0.5)
+      else
+        enum Ok
+    else
+      (
+        putDig $ Math::floor $ 10*float;
+        putFloat (Math::removeWhole (10*float)) (places-1)
+      )
