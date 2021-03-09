@@ -7,6 +7,7 @@ module IO::GTK
     , gtk_container_add : ptr GtkWidget -> ptr GtkWidget -> enum Ok
     , gtk_main_quit : enum Ok
     , on_destroy : ptr GtkWidget -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> enum Ok
+    , on_click: ptr GtkWidget -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> enum Ok
     )
 import Temp::Cons_Boxes as Cons
 import Temp::Cons_Boxes (cons_S)
@@ -60,11 +61,17 @@ __prim__gtk_main_quit : enum Ok
 @impure
 gtk_main_quit = __prim__gtk_main
 
-extern "g_signal_connect"
-__prim__g_signal_connect : ptr GtkWidget -> ptr String -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> ptr String -> enum Ok
+extern "g_signal_connect_data"
+__prim__g_signal_connect_data : ptr GtkWidget -> ptr String -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> ptr String -> ptr String -> Int -> enum Ok
 
 @impure
 on_destroy widget: ptr GtkWidget, f: ptr GtkWidget -> ptr GPointer -> enum Ok =
     str := Cons::cons_to_c "destroy";
-    __prim__g_signal_connect widget str f Cons::null;
+    __prim__g_signal_connect_data widget str f Cons::null Cons::null 0;
+    Cons::free str
+
+@impure
+on_click widget: ptr GtkWidget, f: ptr GtkWidget -> ptr GPointer -> enum Ok =
+    str := Cons::cons_to_c "clicked";
+    __prim__g_signal_connect_data widget str f Cons::null Cons::null 0;
     Cons::free str

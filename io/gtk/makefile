@@ -5,7 +5,8 @@ AR=ar
 ARFLAGS=-rc
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
-CURLYFLAGS=-L.. -l:libgtk-3.so -lgtkbind -L../../../temp/cons_boxes/ -lcons
+CURLYFLAGS=-L.. -lgtkbind -L/usr/lib -l:libgtk-3.so  -lgobject-2.0 -l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o
+STDLIB=~/curstdlib
 
 libs: gtkbind.c
 	cd ../../temp/cons_boxes; make
