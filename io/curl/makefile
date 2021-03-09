@@ -6,25 +6,24 @@ CURLYC=~/curly-lang/target/debug/curlyc
 
 STDLIB=~/curstdlib
 LIBNAME=IO::Curl
+LIBNAMEREDUCED=io-curl
 
-LIBTEMP-CONS_BOXES=-m $(STDLIB)/temp/cons_boxes/.lib/Temp::Cons_Boxes.curlylib
+LIBTEMP-CONS_BOXES=-l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o $(STDLIB)/temp/cons_boxes/temp-cons_boxes.curly
 
-COMPLIBFLAGS=-l $(LIBNAME) $(LIBTEMP-CONS_BOXES)
-USELIBFLAGS=-m .lib/$(LIBNAME).mod.curly
+COMPLIBFLAGS=--lib -o $(LIBNAME) -lcurl -l $(LIBNAME).o $(LIBTEMP-CONS_BOXES)
+USELIBFLAGS=-lcurl -l $(LIBNAME).o $(LIBTEMP-CONS_BOXES) $(LIBNAMEREDUCED).curly
 
-libs:
+libs: $(LIBNAMEREDUCED).c
 	cd $(STDLIB)/temp/cons_boxes; make
 	$(CC) $(CFLAGS) $? -o $(LIBNAME).o
 
-	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAME).curly
+	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
 
-	rm -r .lib &> /dev/null; mkdir .lib
-	cp .build/$(LIBNAME).mod.curly .lib/$(LIBNAME).mod.curly
-	cp .build/lib$(LIBNAME).a      .lib/lib$(LIBNAME).a
+	rm -r .lib; mkdir .lib
+	cp .build/$(LIBNAME).curlylib      .lib/$(LIBNAME).curlylib
 
 all: libs
-	$(CURLYC_DEBUG) build $(CURLYFLAGS) test/$(LIBNAME)--test.curly
+	$(CURLYC_DEBUG) build $(USELIBFLAGS) test/$(LIBNAMEREDUCED)--test.curly
 
 run: all
 	./.build/main
-

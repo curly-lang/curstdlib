@@ -1,0 +1,70 @@
+module IO::GTK
+    ( gtk_init : enum Ok
+    , gtk_window_new : ptr GtkWidget
+    , gtk_button_new_with_label : String -> ptr GtkWidget
+    , gtk_widget_show_all : ptr GtkWidget -> enum Ok
+    , gtk_main : enum Ok
+    , gtk_container_add : ptr GtkWidget -> ptr GtkWidget -> enum Ok
+    , gtk_main_quit : enum Ok
+    , on_destroy : ptr GtkWidget -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> enum Ok
+    )
+import Temp::Cons_Boxes as Cons
+import Temp::Cons_Boxes (cons_S)
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+extern "__curly_gtk_init"
+__prim__gtk_init : enum Ok
+
+@impure
+gtk_init = __prim__gtk_init
+
+extern "gtk_window_new"
+__prim__gtk_window_new : Int -> ptr GtkWidget
+
+@impure
+gtk_window_new = __prim__gtk_window_new 0
+
+extern "gtk_button_new_with_label"
+__prim__gtk_button_new_with_label : ptr String -> ptr GtkWidget
+
+@impure
+gtk_button_new_with_label label: String =
+    label := Cons::cons_to_c label;
+    widget := __prim__gtk_button_new_with_label label;
+    Cons::free label;
+    widget
+
+extern "gtk_container_add"
+__prim__gtk_container_add : ptr GtkWidget -> ptr GtkWidget -> enum Ok
+
+@impure
+gtk_container_add container: ptr GtkWidget, widget: ptr GtkWidget = __prim__gtk_container_add container widget
+
+extern "gtk_widget_show_all"
+__prim__gtk_widget_show_all : ptr GtkWidget -> enum Ok
+
+@impure
+gtk_widget_show_all window: ptr GtkWidget = __prim__gtk_widget_show_all window
+
+extern "gtk_main"
+__prim__gtk_main : enum Ok
+
+@impure
+gtk_main = __prim__gtk_main
+
+extern "gtk_main_quit"
+__prim__gtk_main_quit : enum Ok
+
+@impure
+gtk_main_quit = __prim__gtk_main
+
+extern "g_signal_connect"
+__prim__g_signal_connect : ptr GtkWidget -> ptr String -> (ptr GtkWidget -> ptr GPointer -> enum Ok) -> ptr String -> enum Ok
+
+@impure
+on_destroy widget: ptr GtkWidget, f: ptr GtkWidget -> ptr GPointer -> enum Ok =
+    str := Cons::cons_to_c "destroy";
+    __prim__g_signal_connect widget str f Cons::null;
+    Cons::free str

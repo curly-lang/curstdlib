@@ -9,7 +9,9 @@ module Temp::Cons_Boxes
     free        : ptr String                                                              -> enum Ok     ,
     toChar      : StringChar                                                              -> Char        ,
     toString    : StringChar                                                              -> String      ,
-    length      : StringChar                                                              -> Word
+    length      : StringChar                                                              -> Word        ,
+    null        : ptr String                                                                             ,
+    is_null     : ptr String                                                              -> Bool        
   )
 
 
@@ -70,10 +72,13 @@ setc acc: StringChar, i: Word, p: ptr String =
     __prim__setc p i (match car_S acc to c: Char => c);
     setc (cdr_S acc) (i + 1u) p
   )
-  to Char => p
+  to Char => (
+    __prim__setc p i '\0';
+    p
+  )
 
 cons_to_c str: String =
-  let v = __prim__with_cap $ length str
+  let v = __prim__with_cap $ length str + 1u
   in setc str 0u v
 
 @pure
@@ -92,3 +97,15 @@ toChar   c: StringChar = match c : Char | String
 toString c: StringChar = match c
   to char: Char   => toString $ cons_S char '\0'
   to str : String => str
+
+@pure
+extern "__curly_prim__null"
+__prim__null : ptr String
+
+null = __prim__null
+
+@pure
+extern "__curly_prim__is_null"
+__prim__is_null : ptr String -> Bool
+
+is_null s: ptr String = __prim__is_null s

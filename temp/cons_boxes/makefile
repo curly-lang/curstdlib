@@ -8,7 +8,7 @@ LIBNAME=Temp::Cons_Boxes
 LIBNAMEREDUCED=temp-cons_boxes
 
 COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o
-USELIBFLAGS=-l $(LIBNAME).o -m .lib/$(LIBNAME).curlylib
+USELIBFLAGS=-l $(LIBNAME).o $(LIBNAMEREDUCED).curly
 
 
 libs: $(LIBNAMEREDUCED).c
