@@ -19,6 +19,7 @@ main =
     on_destroy window wrap_gtk_quit;
     on_click button uwu;
     debug $ gtk_widget_show_all window;
-    gtk_main
+    gtk_main;
+    gtk_main_quit
 
 
