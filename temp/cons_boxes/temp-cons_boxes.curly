@@ -7,8 +7,8 @@ module Temp::Cons_Boxes
     c_to_cons   : ptr String                                                              -> String      ,
     cons_to_c   : String                                                                  -> ptr String  ,
     free        : ptr String                                                              -> enum Ok     ,
-    toChar      : StringChar                                                              -> Char        ,
-    toString    : StringChar                                                              -> String      ,
+    to_char      : StringChar                                                              -> Char        ,
+    to_string    : StringChar                                                              -> String      ,
     length      : StringChar                                                              -> Word        ,
     null        : ptr String                                                                             ,
     is_null     : ptr String                                                              -> Bool        
@@ -88,14 +88,14 @@ free str: ptr String = __prim__free str
 
 
 @pure
-toChar   c: StringChar = match c : Char | String
+to_char   c: StringChar = match c : Char | String
   to char: Char   => char
-  to str : String => toChar $ car_S str
+  to str : String => to_char $ car_S str
 
 
 @pure
-toString c: StringChar = match c
-  to char: Char   => toString $ cons_S char '\0'
+to_string c: StringChar = match c
+  to char: Char   => to_string $ cons_S char '\0'
   to str : String => str
 
 @pure
