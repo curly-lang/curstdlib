@@ -1,0 +1,133 @@
+module IO::File
+  (
+    open_file   : ptr String -> FileType               -> ptr File             ,
+    close_file  : ptr File                             -> enum Ok              ,
+    is_eof      : ptr File                             -> Bool                 ,
+    is_err      : ptr File                             -> Bool                 ,
+    get_char    : ptr File                             -> Char                 ,
+    get_line    : ptr File                             -> ptr String           ,
+    put_char    : ptr File   -> Char                   -> (enum Ok | enum Err) ,
+    put_string  : ptr File   -> ptr String             -> (enum Ok | enum Err) ,
+    seek        : ptr File   -> SeekOrigin -> Int      -> (enum Ok | enum Err)
+  )
+
+import Temp::Cons_Boxes (cons_S, cons_to_c, c_to_cons, car_S, cdr_S, to_char, to_string)
+import Temp::Cons_Boxes as Cons
+
+type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus
+type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+
+
+@impure
+extern "__curly_open_file"
+__prim_open_file : ptr String -> ptr String -> ptr File
+
+@pure
+file_type_to_open_string file_type: FileType = match file_type
+  to enum Read       => cons_to_c "r"
+  to enum Write      => cons_to_c "w"
+  to enum Append     => cons_to_c "a"
+  to enum ReadPlus   => cons_to_c "r+"
+  to enum WritePlus  => cons_to_c "w+"
+  to enum AppendPlus => cons_to_c "a+"
+
+@impure
+open_file filename: ptr String, file_type: FileType = __prim_open_file filename (file_type_to_open_string file_type)
+
+
+@impure
+extern "__curly_close_file"
+__prim_close_file : ptr File -> enum Ok
+
+@impure
+close_file file: ptr File = __prim_close_file file
+
+
+@impure
+extern "__curly_is_eof"
+__prim_is_eof : ptr File -> Bool
+
+@impure
+is_eof file: ptr File = __prim_is_eof file
+
+
+@impure
+extern "__curly_is_err"
+__prim_is_err : ptr File -> Bool
+
+@impure
+is_err file: ptr File = __prim_is_err file
+
+
+
+@impure
+extern "__curly_get_char"
+__prim_get_char : ptr File -> Char
+
+@impure
+get_char file: ptr File = __prim_get_char file
+
+
+@impure
+get_line_tail file: ptr File, acc: StringChar =
+  let c = get_char file
+  in
+    if c == '\n' or is_eof file then
+      acc
+    else
+      get_line_tail file (Cons::cons_S c acc)
+
+@impure
+get_line file: ptr File = cons_to_c $ Cons::reverse $ to_string $ get_line_tail file '\0'
+
+
+
+@impure
+extern "__curly_put_char"
+__prim_put_char : ptr File -> Char -> Bool
+
+@impure
+put_char file: ptr File, char: Char = 
+  if __prim_put_char file char then
+    enum Ok
+  else
+    enum Err
+
+
+@impure
+put_string_tail file: ptr File, string: String =
+  if (to_char $ car_S string) == '\0' then
+    enum Ok
+  else
+    (
+      put_char_result := put_char file (to_char $ car_S string);
+      match put_char_result
+        to enum Ok  => put_string_tail file (to_string $ cdr_S string)
+        to enum Err => enum Err
+    )
+
+@impure
+put_string file: ptr File, string: ptr String = put_string_tail file (c_to_cons string)
+
+
+
+@impure
+extern "__curly_seek"
+__prim_seek : ptr File -> Word -> Int -> Bool
+
+@pure
+seek_origin_to_word origin: SeekOrigin = match origin
+  to enum SEEK_SET => 0u
+  to enum SEEK_CUR => 1u
+  to enum SEEK_END => 2u
+
+@impure
+seek file: ptr File, origin: SeekOrigin, offset: Int = 
+  if __prim_seek file (seek_origin_to_word origin) offset then
+    enum Ok
+  else
+    enum Err

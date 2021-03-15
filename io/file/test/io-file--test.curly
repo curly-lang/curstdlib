@@ -1,0 +1,54 @@
+module Main
+
+import IO::File as f
+import Temp::Cons_Boxes (cons_S, cons_to_c)
+
+
+type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus
+type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+
+extern "__curly_prim__print_str"
+__prim__printf : ptr String -> enum Ok
+
+
+@impure
+main =
+  fileWrite := f::open_file (cons_to_c ".build/testfile") enum Write;
+
+  debug $ f::put_string fileWrite (cons_to_c "Hi!\n");
+  debug $ f::put_string fileWrite (cons_to_c "uwu");
+
+  f::close_file fileWrite;
+
+
+
+  fileRead := f::open_file (cons_to_c ".build/testfile") enum Read;
+
+  __prim__printf $ f::get_line fileRead;
+  __prim__printf $ f::get_line fileRead;
+
+  f::close_file fileRead;
+
+
+
+  fileWritePlus := f::open_file (cons_to_c ".build/testfile2") enum WritePlus;
+
+  debug $ f::put_string fileWritePlus (cons_to_c "Hello.\n");
+  debug $ f::put_string fileWritePlus (cons_to_c "This is an awesome file.\n");
+  debug $ f::put_string fileWritePlus (cons_to_c "Agreed?");
+
+  debug $ f::seek fileWritePlus enum SEEK_SET 0;
+
+  __prim__printf $ f::get_line fileRead;
+  __prim__printf $ f::get_line fileRead;
+  __prim__printf $ f::get_line fileRead;
+
+  f::close_file fileRead;
+
+
+
+  enum Ok
