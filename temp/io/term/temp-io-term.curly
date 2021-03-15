@@ -22,7 +22,7 @@ _input acc: StringChar =
       _input $ Cons::cons_S c acc
 
 @impure
-input = Cons::reverse $ Cons::toString $ _input '\0'
+input = Cons::reverse $ Cons::to_string $ _input '\0'
 
 
 @impure
@@ -31,6 +31,6 @@ print m: StringChar = match m
 	IOTerm::putch '\n'
 
   to s: String => (
-    IOTerm::putch $ Cons::toChar $ Cons::car_S s;
+    IOTerm::putch $ Cons::to_char $ Cons::car_S s;
     print $ Cons::cdr_S m
   )
