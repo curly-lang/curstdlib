@@ -1,11 +1,21 @@
 CC=gcc
-CFLAGS=-c -I/usr/include/gtk-3.0 -I/usr/include/glib-2.0 -I/usr/lib/glib-2.0/include -I/usr/include/pango-1.0/ -I/usr/include/harfbuzz -I/usr/include/cairo -I/usr/include/gdk-pixbuf-2.0 -I/usr/include/atk-1.0
-MACOSCFLAGS=-I/opt/homebrew/include -I/opt/homebrew/include/gtk-3.0 -I/opt/homebrew/include/glib-2.0 -I/opt/homebrew/lib/glib-2.0/include -I/opt/homebrew/include/pango-1.0/ -I/opt/homebrew/include/harfbuzz -I/opt/homebrew/include/cairo -I/opt/homebrew/include/gdk-pixbuf-2.0 -I/opt/homebrew/include/atk-1.0
+
+
+IPATH=/usr/include
+MACOSIPATH=/opt/homebrew/include
+
+CFLAGS=-c -I$(IPATH)/gtk-3.0 -I$(IPATH)/glib-2.0 -I/usr/lib/glib-2.0/include -I$(IPATH)/pango-1.0/ -I$(IPATH)/harfbuzz -I$(IPATH)/cairo -I$(IPATH)/gdk-pixbuf-2.0 -I$(IPATH)/atk-1.0
+MACOSCFLAGS=-I$(MACOSIPATH) -I$(MACOSIPATH)/gtk-3.0 -I$(MACOSIPATH)/glib-2.0 -I/opt/homebrew/lib/glib-2.0/include -I$(MACOSIPATH)/pango-1.0/ -I$(MACOSIPATH)/harfbuzz -I$(MACOSIPATH)/cairo -I$(MACOSIPATH)/gdk-pixbuf-2.0 -I$(MACOSIPATH)/atk-1.0
+
+
 AR=ar
 ARFLAGS=-rc
+
+
 CURLYC_DEBUG=RUST_BACKTRACE=1 ~/curly-lang/target/debug/curlyc
 CURLYC=~/curly-lang/target/debug/curlyc
-CURLYFLAGS=-L.. -lgtkbind -L/usr/lib -l:libgtk-3.so  -lgobject-2.0 -l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o
+
+CURLYFLAGS=-L.. -lgtkbind -L/usr/lib -L/opt/homebrew/lib -lgtk-3  -lgobject-2.0 -l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o
 STDLIB=~/curstdlib
 
 libs: gtkbind.c

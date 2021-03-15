@@ -17,7 +17,7 @@ libs: $(LIBNAMEREDUCED).c
 	cd $(STDLIB)/math; make
 	$(CC) $(CFLAGS) $? -o $(LIBNAME).o
 	
-  $(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
+	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
   
 	rm -r .lib; mkdir .lib
 	cp .build/$(LIBNAME).curlylib .lib/$(LIBNAME).curlylib 
