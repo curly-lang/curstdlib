@@ -5,6 +5,7 @@ module IO::Term
     cols     :                      Int
     rows     :                      Int
     chr      : Int               -> Char
+    ord      : Char              -> Int
     putDig   : Int               -> enum Ok
     putInt   : Int               -> enum Ok
     putFloat : Float -> Int      -> enum Ok
@@ -52,6 +53,16 @@ __prim__chr : Int -> Char
 
 @pure
 chr i: Int = __prim__chr i
+
+
+
+@pure
+extern "__curly_prim__ord"
+__prim__ord : Char -> Int
+
+@pure
+ord i: Char = __prim__ord i
+
 
 
 @impure

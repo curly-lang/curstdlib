@@ -32,3 +32,8 @@ char __curly_prim__chr(int i)
 {
     return (char) i;
 }
+
+int __curly_prim__ord(char i)
+{
+    return (int) i;
+}
