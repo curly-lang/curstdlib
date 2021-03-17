@@ -16,7 +16,7 @@ module IO::FS
 
 import Temp::Cons_Boxes (cons_S)
 
-type FileType = enum File | enum Directory | enum Symlink | enum CharDevice | enum BlockDevice | enum Socket | enum FIFO_Pipe | enum Err
+type FileType = enum File | enum Directory | enum Symlink | enum CharDevice | enum BlockDevice | enum Socket | enum FIFO_Pipe | enum Empty | enum Err
 
 @impure
 extern "__curly_copy_file"
@@ -119,6 +119,8 @@ file_type path_to_get_type: ptr Path =
       enum Socket
     else if fileTypeChar == 'f' then
       enum FIFO_Pipe
+    else if fileTypeChar == 'E' then
+      enum Empty
     else
       enum Err
   )
