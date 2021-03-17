@@ -2,10 +2,13 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <stdbool.h>
 #include <fcntl.h>
+#include <limits.h>
 #include <unistd.h>
 #include <sys/stat.h>
+#include <errno.h>
 #include <ftw.h>
 
 #if defined(__APPLE__) || defined(__FreeBSD__)
@@ -114,21 +117,31 @@ Path *__curly_canonicalize(Path *pathToCanonicalize)
 {
     char *stringToCanonicalize = __curly_path_to_string(pathToCanonicalize);
 
-    char *canonicalizedString = realpath(stringToCanonicalize, NULL);
+    char *canonicalizedStringBuf = calloc(PATH_MAX + 1, sizeof(char));
+    realpath(stringToCanonicalize, canonicalizedStringBuf);
     free(stringToCanonicalize);
-
-    Path *canonicalizedPath = __curly_string_to_path(canonicalizedString);
-    free(canonicalizedString);
+    
+    Path *canonicalizedPath = __curly_string_to_path(canonicalizedStringBuf);
+    free(canonicalizedStringBuf);
 
     return canonicalizedPath;
 }
 
-char __curly_file_type(Path *find)
+char __curly_file_type(Path *findFileTypePath)
 {
-    struct stat buf;
-    lstat ("junklink", &buf);
+    Path *findFileTypeCanonicalPath = __curly_canonicalize(findFileTypePath);
+
+    char *findFileTypeString =  __curly_path_to_string(findFileTypeCanonicalPath);
+    free(findFileTypeCanonicalPath);
     
-    switch (buf.st_mode & S_IFMT) {
+    struct stat *st = calloc(1, sizeof(struct stat));
+    if (lstat(findFileTypeString, st) != 0) {
+        return 'E';
+    }
+
+    free(findFileTypeString);
+    
+    switch (st->st_mode & S_IFMT) {
         case S_IFBLK:  return 'B' ; break;
         case S_IFCHR:  return 'C' ; break;
         case S_IFDIR:  return 'D' ; break;
@@ -136,6 +149,6 @@ char __curly_file_type(Path *find)
         case S_IFLNK:  return 'L' ; break;
         case S_IFREG:  return 'F' ; break;
         case S_IFSOCK: return 'S' ; break;
-        default:       return '\0'; break;
+        default:       return 'e'; break;
     }
 }
