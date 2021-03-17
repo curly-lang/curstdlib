@@ -4,7 +4,7 @@ import IO::File as f
 import Temp::Cons_Boxes (cons_S, cons_to_c)
 
 
-type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus
+type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
 type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
 
 type StringChar = Char | String
@@ -17,37 +17,55 @@ __prim__printf : ptr String -> enum Ok
 
 @impure
 main =
-  fileWrite := f::open_file (cons_to_c ".build/testfile") enum Write;
+  fileWriteOpen := f::open_file (cons_to_c ".build/testfile") enum Write;
+  (
+    match fileWriteOpen
+      to fileWrite: ptr File =>
+        (
+          debug $ f::put_string fileWrite (cons_to_c "Hi!\n");
+          debug $ f::put_string fileWrite (cons_to_c "uwu");
 
-  debug $ f::put_string fileWrite (cons_to_c "Hi!\n");
-  debug $ f::put_string fileWrite (cons_to_c "uwu");
-
-  f::close_file fileWrite;
-
-
-
-  fileRead := f::open_file (cons_to_c ".build/testfile") enum Read;
-
-  __prim__printf $ f::get_line fileRead;
-  __prim__printf $ f::get_line fileRead;
-
-  f::close_file fileRead;
+          f::close_file fileWrite
+        )
+      to enum Err => debug fileWriteOpen
+  );
 
 
 
-  fileWritePlus := f::open_file (cons_to_c ".build/testfile2") enum WritePlus;
+  fileReadOpen := f::open_file (cons_to_c ".build/testfile") enum Read;
+  (
+    match fileReadOpen
+      to fileRead: ptr File =>
+        (
+          __prim__printf $ f::get_line fileRead;
+          __prim__printf $ f::get_line fileRead;
 
-  debug $ f::put_string fileWritePlus (cons_to_c "Hello.\n");
-  debug $ f::put_string fileWritePlus (cons_to_c "This is an awesome file.\n");
-  debug $ f::put_string fileWritePlus (cons_to_c "Agreed?");
+          f::close_file fileRead
+        )
+      to enum Err => debug fileReadOpen
+  );
 
-  debug $ f::seek fileWritePlus enum SEEK_SET 0;
 
-  __prim__printf $ f::get_line fileRead;
-  __prim__printf $ f::get_line fileRead;
-  __prim__printf $ f::get_line fileRead;
 
-  f::close_file fileRead;
+  fileWritePlusOpen := f::open_file (cons_to_c ".build/testfile2") enum WritePlus;
+  (
+    match fileWritePlusOpen
+      to fileWritePlus: ptr File =>
+        (
+          debug $ f::put_string fileWritePlus (cons_to_c "Hello.\n");
+          debug $ f::put_string fileWritePlus (cons_to_c "This is an awesome file.\n");
+          debug $ f::put_string fileWritePlus (cons_to_c "Agreed?");
+
+          debug $ f::seek fileWritePlus enum SEEK_SET 0;
+
+          __prim__printf $ f::get_line fileWritePlus;
+          __prim__printf $ f::get_line fileWritePlus;
+          __prim__printf $ f::get_line fileWritePlus;
+
+          f::close_file fileWritePlus
+        )
+      to enum Err => debug fileWritePlusOpen
+  );
 
 
 

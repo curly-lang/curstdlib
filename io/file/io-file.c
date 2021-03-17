@@ -7,6 +7,11 @@ FILE* __curly_open_file(char* file, char* type)
     return fopen(file, type);
 }
 
+bool __curly_is_null_fileptr(FILE* file)
+{
+    return (file == 0);
+}
+
 void __curly_close_file(FILE* file)
 {
     fclose(file);
