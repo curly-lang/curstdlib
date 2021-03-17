@@ -11,8 +11,7 @@ module IO::File
     seek        : ptr File   -> SeekOrigin -> Int      -> (enum Ok | enum Err)
   )
 
-import Temp::Cons_Boxes (cons_S, cons_to_c, c_to_cons, car_S, cdr_S, to_char, to_string)
-import Temp::Cons_Boxes as Cons
+import Temp::Cons_Boxes (cons_S)
 
 type OpenType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
 type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
@@ -32,17 +31,21 @@ __prim_is_null_fileptr : ptr File -> Bool
 
 @pure
 open_type_to_open_string open_type: OpenType = match open_type
-  to enum Read       => cons_to_c "r"
-  to enum Write      => cons_to_c "w"
-  to enum Append     => cons_to_c "a"
-  to enum ReadPlus   => cons_to_c "r+"
-  to enum WritePlus  => cons_to_c "w+"
-  to enum AppendPlus => cons_to_c "a+"
+  to enum Read       => Temp::Cons_Boxes::cons_to_c "r"
+  to enum Write      => Temp::Cons_Boxes::cons_to_c "w"
+  to enum Append     => Temp::Cons_Boxes::cons_to_c "a"
+  to enum ReadPlus   => Temp::Cons_Boxes::cons_to_c "r+"
+  to enum WritePlus  => Temp::Cons_Boxes::cons_to_c "w+"
+  to enum AppendPlus => Temp::Cons_Boxes::cons_to_c "a+"
 
 @impure
 open_file filename: ptr String, open_type: OpenType = 
   (
-    fileptr := __prim_open_file filename (open_type_to_open_string open_type);
+    open_type_string := open_type_to_open_string open_type; 
+
+    fileptr := __prim_open_file filename open_type_string;
+    Temp::Cons_Boxes::free open_type_string;
+
     if __prim_is_null_fileptr fileptr then
       enum Err
     else
@@ -90,10 +93,10 @@ get_line_tail file: ptr File, acc: StringChar =
     if c == '\n' or is_eof file then
       acc
     else
-      get_line_tail file (Cons::cons_S c acc)
+      get_line_tail file (Temp::Cons_Boxes::cons_S c acc)
 
 @impure
-get_line file: ptr File = cons_to_c $ Cons::reverse $ to_string $ get_line_tail file '\0'
+get_line file: ptr File = Temp::Cons_Boxes::cons_to_c $ Temp::Cons_Boxes::reverse $ Temp::Cons_Boxes::to_string $ get_line_tail file '\0'
 
 
 
@@ -111,18 +114,18 @@ put_char file: ptr File, char: Char =
 
 @impure
 put_string_tail file: ptr File, string: String =
-  if (to_char $ car_S string) == '\0' then
+  if (Temp::Cons_Boxes::to_char $ Temp::Cons_Boxes::car_S string) == '\0' then
     enum Ok
   else
     (
-      put_char_result := put_char file (to_char $ car_S string);
+      put_char_result := put_char file (Temp::Cons_Boxes::to_char $ Temp::Cons_Boxes::car_S string);
       match put_char_result
-        to enum Ok  => put_string_tail file (to_string $ cdr_S string)
+        to enum Ok  => put_string_tail file (Temp::Cons_Boxes::to_string $ Temp::Cons_Boxes::cdr_S string)
         to enum Err => enum Err
     )
 
 @impure
-put_string file: ptr File, string: ptr String = put_string_tail file (c_to_cons string)
+put_string file: ptr File, string: ptr String = put_string_tail file (Temp::Cons_Boxes::c_to_cons string)
 
 
 
