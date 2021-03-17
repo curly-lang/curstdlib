@@ -1,6 +1,6 @@
 module IO::File
   (
-    open_file   : ptr String -> FileType               -> (ptr File | enum Err) ,
+    open_file   : ptr String -> OpenType               -> (ptr File | enum Err) ,
     close_file  : ptr File                             -> enum Ok               ,
     is_eof      : ptr File                             -> Bool                  ,
     is_err      : ptr File                             -> Bool                  ,
@@ -14,7 +14,7 @@ module IO::File
 import Temp::Cons_Boxes (cons_S, cons_to_c, c_to_cons, car_S, cdr_S, to_char, to_string)
 import Temp::Cons_Boxes as Cons
 
-type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
+type OpenType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
 type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
 
 type StringChar = Char | String
@@ -31,7 +31,7 @@ extern "__curly_is_null_fileptr"
 __prim_is_null_fileptr : ptr File -> Bool
 
 @pure
-file_type_to_open_string file_type: FileType = match file_type
+open_type_to_open_string open_type: OpenType = match open_type
   to enum Read       => cons_to_c "r"
   to enum Write      => cons_to_c "w"
   to enum Append     => cons_to_c "a"
@@ -40,9 +40,9 @@ file_type_to_open_string file_type: FileType = match file_type
   to enum AppendPlus => cons_to_c "a+"
 
 @impure
-open_file filename: ptr String, file_type: FileType = 
+open_file filename: ptr String, open_type: OpenType = 
   (
-    fileptr := __prim_open_file filename (file_type_to_open_string file_type);
+    fileptr := __prim_open_file filename (open_type_to_open_string open_type);
     if __prim_is_null_fileptr fileptr then
       enum Err
     else

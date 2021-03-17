@@ -4,7 +4,7 @@ import IO::File as f
 import Temp::Cons_Boxes (cons_S, cons_to_c)
 
 
-type FileType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
+type OpenType = enum Read | enum Write | enum Append | enum ReadPlus | enum WritePlus | enum AppendPlus | enum WriteX | enum WritePlusX
 type SeekOrigin = enum SEEK_SET | enum SEEK_CUR | enum SEEK_END
 
 type StringChar = Char | String
