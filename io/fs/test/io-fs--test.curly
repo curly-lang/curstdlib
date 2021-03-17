@@ -1,0 +1,63 @@
+module Main
+import IO::FS
+import Temp::Cons_Boxes (cons_S)
+
+type FileType = enum File | enum Directory | enum Symlink | enum CharDevice | enum BlockDevice | enum Socket | enum FIFO_Pipe | enum Err
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+extern "__curly_prim__print_str"
+__prim__printf : ptr String -> enum Ok
+
+@impure
+main = 
+  build := Temp::Cons_Boxes::cons_to_c ".build"                         ;
+  buildPath := IO::FS::string_to_path build                             ;
+
+  debug buildPath                                                       ;
+
+  Temp::Cons_Boxes::free build                                          ;
+  IO::FS::free_path buildPath                                           ;
+
+
+
+  main  := Temp::Cons_Boxes::cons_to_c ".build/main"                    ;
+  maiin := Temp::Cons_Boxes::cons_to_c ".build/maiin"                   ;
+  mainPath  := IO::FS::string_to_path main                              ;
+  maiinPath := IO::FS::string_to_path maiin                             ;
+
+  debug $ IO::FS::rename      mainPath   maiinPath                      ;
+  debug $ IO::FS::copy        maiinPath  mainPath                       ;
+  debug $ IO::FS::remove_file maiinPath                                 ;
+
+  Temp::Cons_Boxes::free main                                           ;
+  Temp::Cons_Boxes::free maiin                                          ;
+  IO::FS::free_path mainPath                                            ;
+  IO::FS::free_path maiinPath                                           ;
+
+
+
+  directory := Temp::Cons_Boxes::cons_to_c ".build/../.build/directory" ;
+  directoryPath := IO::FS::string_to_path directory                     ;
+
+  debug $ IO::FS::remove_dir directoryPath                              ;
+  debug $ IO::FS::create_dir directoryPath                              ;
+
+  match (IO::FS::file_type directoryPath)
+    to enum Directory => debug $ IO::FS::remove_dir directoryPath       ;
+  debug $ IO::FS::create_dir directoryPath                              ;
+
+  directoryCanonicalPath := IO::FS::canonicalize directoryPath          ;
+  directoryCanonical := IO::FS::path_to_string directoryCanonicalPath   ;
+
+  __prim__printf directoryCanonical                                     ;
+
+  Temp::Cons_Boxes::free directory                                      ;
+  IO::FS::free_path directoryPath                                       ;
+  IO::FS::free_path directoryCanonicalPath                              ;
+  Temp::Cons_Boxes::free directoryCanonical                             ;
+
+
+
+  enum Ok

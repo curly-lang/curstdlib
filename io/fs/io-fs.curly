@@ -1,0 +1,151 @@
+module IO::FS
+  (
+    copy           : ptr Path    -> ptr Path        -> (enum Ok | enum Err) ,
+    rename         : ptr Path    -> ptr Path        -> (enum Ok | enum Err) ,
+    create_dir     : ptr Path                       -> (enum Ok | enum Err) ,
+    read_dir       : ptr Path                       -> enum Ok              ,
+    remove_dir     : ptr Path                       -> (enum Ok | enum Err) ,
+    remove_file    : ptr Path                       -> (enum Ok | enum Err) ,
+    canonicalize   : ptr Path                       -> ptr Path             ,
+    file_type      : ptr Path                       -> FileType             ,
+
+    path_to_string : ptr Path                       -> ptr String           ,
+    string_to_path : ptr String                     -> ptr Path             ,
+    free_path      : ptr Path                       -> enum Ok              
+  )
+
+import Temp::Cons_Boxes (cons_S)
+
+type FileType = enum File | enum Directory | enum Symlink | enum CharDevice | enum BlockDevice | enum Socket | enum FIFO_Pipe | enum Err
+
+@impure
+extern "__curly_copy_file"
+__prim_copy_file : ptr Path -> ptr Path -> Bool
+
+@impure
+copy src_file: ptr Path, dest_file: ptr Path = 
+  if __prim_copy_file src_file dest_file then
+    enum Ok
+  else
+    enum Err
+
+
+
+@impure
+extern "__curly_rename_file"
+__prim_rename_file : ptr Path -> ptr Path -> Bool
+
+@impure
+rename src_file: ptr Path, dest_file: ptr Path =       
+  if __prim_rename_file src_file dest_file then
+    enum Ok
+  else 
+    enum Err
+
+
+
+@impure
+extern "__curly_create_dir"
+__prim_create_dir : ptr Path -> Bool
+
+@impure
+create_dir dir_path: ptr Path =
+  if __prim_create_dir dir_path then
+    enum Ok
+  else
+    enum Err
+
+
+
+#@impure
+read_dir dir_path: ptr Path = enum Ok
+
+
+
+@impure
+extern "__curly_remove_dir"
+__prim_remove_dir : ptr Path -> Bool
+
+@impure
+remove_dir dir_path: ptr Path = 
+  if __prim_remove_dir dir_path then
+    enum Ok
+  else
+    enum Err
+
+
+
+@impure
+extern "__curly_remove_file"
+__prim_remove_file : ptr Path -> Bool
+
+@impure
+remove_file file_path: ptr Path =
+  if __prim_remove_file file_path then
+    enum Ok
+  else
+    enum Err
+
+
+
+@impure
+extern "__curly_canonicalize"
+__prim_canonicalize : ptr Path -> ptr Path
+
+@impure
+canonicalize dir_path: ptr Path = __prim_canonicalize dir_path
+
+
+
+@impure
+extern "__curly_file_type"
+__prim_file_type : ptr Path -> Char
+
+@impure
+file_type path_to_get_type: ptr Path = 
+  (
+    fileTypeChar := __prim_file_type path_to_get_type;
+    if fileTypeChar == 'F' then
+      enum File
+    else if fileTypeChar == 'D' then
+      enum Directory
+    else if fileTypeChar == 'L' then
+      enum Symlink
+    else if fileTypeChar == 'C' then
+      enum CharDevice
+    else if fileTypeChar == 'B' then
+      enum BlockDevice
+    else if fileTypeChar == 'S' then
+      enum Socket
+    else if fileTypeChar == 'f' then
+      enum FIFO_Pipe
+    else
+      enum Err
+  )
+
+
+@impure
+extern "__curly_string_to_path"
+__prim_string_to_path : ptr String -> ptr Path
+
+@impure
+string_to_path path_as_str: ptr String = __prim_string_to_path path_as_str
+
+
+
+@impure
+extern "__curly_path_to_string"
+__prim_path_to_string : ptr Path -> ptr String
+
+@impure
+path_to_string path: ptr Path = __prim_path_to_string path
+
+
+
+@impure
+extern "__curly_free_path"
+__prim_free_path : ptr Path -> enum Ok
+
+@impure
+free_path path_to_free: ptr Path = __prim_free_path path_to_free
+
