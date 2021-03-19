@@ -8,10 +8,10 @@ STDLIB=~/curstdlib
 LIBNAME=IO::File
 LIBNAMEREDUCED=io-file
 
-LIBTEMP-CONS_BOXES=-l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o $(STDLIB)/temp/cons_boxes/temp-cons_boxes.curly
+LIBTEMP-CONS_BOXES=-m $(STDLIB)/temp/cons_boxes/.lib/Temp::Cons_Boxes.curlylib
 
-COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o $(LIBTEMP-CONS_BOXES)
-USELIBFLAGS=-l $(LIBNAME).o $(LIBTEMP-CONS_BOXES) $(LIBNAMEREDUCED).curly
+COMPLIBFLAGS=$(LIBTEMP-CONS_BOXES)   -l $(LIBNAME).o   --lib   -o $(LIBNAME)
+USELIBFLAGS=-m .lib/$(LIBNAME).curlylib
 
 libs: $(LIBNAMEREDUCED).c
 	cd $(STDLIB)/temp/cons_boxes; make

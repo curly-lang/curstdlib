@@ -7,7 +7,7 @@ LIBNAMEREDUCED=temp-io-term
 
 
 LIBIO-TERM=-m $(STDLIB)/io/term/.lib/IO::Term.curlylib
-LIBTEMP-CONS_BOXES=-l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o $(STDLIB)/temp/cons_boxes/temp-cons_boxes.curly
+LIBTEMP-CONS_BOXES=-m $(STDLIB)/temp/cons_boxes/.lib/Temp::Cons_Boxes.curlylib
 
 COMPLIBFLAGS=--lib -o $(LIBNAME) $(LIBIO-TERM) $(LIBTEMP-CONS_BOXES)
 USELIBFLAGS=$(LIBIO-TERM) $(LIBTEMP-CONS_BOXES) $(LIBNAMEREDUCED).curly
