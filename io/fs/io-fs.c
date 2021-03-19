@@ -1,3 +1,6 @@
+#define __USE_XOPEN_EXTENDED 1
+#define _XOPEN_SOURCE 500
+
 #include "io-fs-path.h"
 
 #include <stdio.h>
