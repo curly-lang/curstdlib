@@ -18,6 +18,9 @@ import Temp::Cons_Boxes (cons_S)
 
 type FileType = enum File | enum Directory | enum Symlink | enum CharDevice | enum BlockDevice | enum Socket | enum FIFO_Pipe | enum Empty | enum Err
 
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
 @impure
 extern "__curly_copy_file"
 __prim_copy_file : ptr Path -> ptr Path -> Bool
