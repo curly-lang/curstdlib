@@ -19,7 +19,7 @@ libs: $(LIBNAMEREDUCED).c
 	
 	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
   
-	rm -r .lib; mkdir .lib
+	rm -r .lib > /dev/null 2>&1; mkdir .lib
 	cp .build/$(LIBNAME).curlylib .lib/$(LIBNAME).curlylib 
 
 all: libs

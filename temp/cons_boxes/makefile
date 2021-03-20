@@ -8,7 +8,7 @@ LIBNAME=Temp::Cons_Boxes
 LIBNAMEREDUCED=temp-cons_boxes
 
 COMPLIBFLAGS=--lib -o $(LIBNAME) -l $(LIBNAME).o
-USELIBFLAGS=-l $(LIBNAME).o $(LIBNAMEREDUCED).curly
+USELIBFLAGS=-m .lib/$(LIBNAME).curlylib
 
 
 libs: $(LIBNAMEREDUCED).c
@@ -16,7 +16,7 @@ libs: $(LIBNAMEREDUCED).c
 
 	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
 
-	rm -r .lib &> /dev/null; mkdir .lib
+	rm -r .lib > /dev/null 2>&1; mkdir .lib
 	cp .build/$(LIBNAME).curlylib      .lib/$(LIBNAME).curlylib
 
 all: libs

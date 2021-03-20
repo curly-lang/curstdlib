@@ -9,20 +9,20 @@ LIBNAME=IO::FS
 LIBNAMEREDUCED=io-fs
 
 LIBTEMP-CONS_BOXES=-m $(STDLIB)/temp/cons_boxes/.lib/Temp::Cons_Boxes.curlylib
-LIBIO-FILE=-l $(STDLIB)/io/file/IO::File.o $(STDLIB)/io/file/io-file.curly
 
 COMPLIBFLAGS=$(LIBTEMP-CONS_BOXES)  $(LIBIO-FILE)  -l $(LIBNAME).o -l $(LIBNAME)::Path.o  --lib -o $(LIBNAME)
 USELIBFLAGS= -m .lib/$(LIBNAME).curlylib
 
 libs:
 	cd $(STDLIB)/temp/cons_boxes; make
+	cd $(STDLIB)/io/file;         make
 
 	$(CC) $(CFLAGS) $(LIBNAMEREDUCED)-path.c -o $(LIBNAME)::Path.o
 	$(CC) $(CFLAGS) $(LIBNAMEREDUCED).c      -o $(LIBNAME).o
 
 	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) $(LIBNAMEREDUCED).curly
 
-	rm -r .lib; mkdir .lib
+	rm -r .lib > /dev/null 2>&1; mkdir .lib
 	cp .build/$(LIBNAME).curlylib      .lib/$(LIBNAME).curlylib
 
 all: libs

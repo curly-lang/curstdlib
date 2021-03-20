@@ -11,7 +11,7 @@ LIBNAMEREDUCED=io-curl
 LIBTEMP-CONS_BOXES=-l $(STDLIB)/temp/cons_boxes/Temp::Cons_Boxes.o $(STDLIB)/temp/cons_boxes/temp-cons_boxes.curly
 
 COMPLIBFLAGS=--lib -o $(LIBNAME) -lcurl -l $(LIBNAME).o $(LIBTEMP-CONS_BOXES)
-USELIBFLAGS=-lcurl -l $(LIBNAME).o $(LIBTEMP-CONS_BOXES) $(LIBNAMEREDUCED).curly
+USELIBFLAGS=-lcurl  -m .lib/$(LIBNAME).curlylib
 
 libs: $(LIBNAMEREDUCED).c
 	cd $(STDLIB)/temp/cons_boxes; make
