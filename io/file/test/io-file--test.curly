@@ -17,13 +17,21 @@ __prim__printf : ptr String -> enum Ok
 
 @impure
 main =
-  fileWriteOpen := f::open_file (cons_to_c ".build/testfile") enum Write;
+  fileName := cons_to_c ".build/testfile";
+  fileWriteOpen := f::open_file fileName enum Write;
+  Temp::Cons_Boxes::free fileName;
   (
     match fileWriteOpen
       to fileWrite: ptr File =>
         (
-          debug $ f::put_string fileWrite (cons_to_c "Hi!\n");
-          debug $ f::put_string fileWrite (cons_to_c "uwu");
+          writeLine1 := cons_to_c "Hi!\n";
+          writeLine2 := cons_to_c "uwu";
+
+          debug $ f::put_string fileWrite writeLine1;
+          debug $ f::put_string fileWrite writeLine2;
+
+          Temp::Cons_Boxes::free writeLine1;
+          Temp::Cons_Boxes::free writeLine2;
 
           f::close_file fileWrite
         )
@@ -31,14 +39,21 @@ main =
   );
 
 
-
-  fileReadOpen := f::open_file (cons_to_c ".build/testfile") enum Read;
+  fileName := cons_to_c ".build/testfile";
+  fileReadOpen := f::open_file fileName enum Read;
+  Temp::Cons_Boxes::free fileName;
   (
     match fileReadOpen
       to fileRead: ptr File =>
         (
-          __prim__printf $ f::get_line fileRead;
-          __prim__printf $ f::get_line fileRead;
+          readLine1 := f::get_line fileRead;
+          readLine2 := f::get_line fileRead;
+
+          __prim__printf readLine1;
+          __prim__printf readLine2;
+
+          Temp::Cons_Boxes::free readLine1;
+          Temp::Cons_Boxes::free readLine2;
 
           f::close_file fileRead
         )
@@ -47,20 +62,40 @@ main =
 
 
 
-  fileWritePlusOpen := f::open_file (cons_to_c ".build/testfile2") enum WritePlus;
+  fileName := cons_to_c ".build/testfile2";
+  fileWritePlusOpen := f::open_file fileName enum WritePlus;
+  Temp::Cons_Boxes::free fileName;
   (
     match fileWritePlusOpen
       to fileWritePlus: ptr File =>
         (
-          debug $ f::put_string fileWritePlus (cons_to_c "Hello.\n");
-          debug $ f::put_string fileWritePlus (cons_to_c "This is an awesome file.\n");
-          debug $ f::put_string fileWritePlus (cons_to_c "Agreed?");
+          writeLine1 := cons_to_c "Hello.\n";
+          writeLine2 := cons_to_c "This is an awesome file.\n";
+          writeLine3 := cons_to_c "Agreed?";
+
+          debug $ f::put_string fileWritePlus writeLine1;
+          debug $ f::put_string fileWritePlus writeLine2;
+          debug $ f::put_string fileWritePlus writeLine3;
+
+          Temp::Cons_Boxes::free writeLine1;
+          Temp::Cons_Boxes::free writeLine2;
+          Temp::Cons_Boxes::free writeLine3;
+
 
           debug $ f::seek fileWritePlus enum SEEK_SET 0;
 
-          __prim__printf $ f::get_line fileWritePlus;
-          __prim__printf $ f::get_line fileWritePlus;
-          __prim__printf $ f::get_line fileWritePlus;
+
+          readLine1 := f::get_line fileWritePlus;
+          readLine2 := f::get_line fileWritePlus;
+          readLine3 := f::get_line fileWritePlus;
+
+          __prim__printf readLine1;
+          __prim__printf readLine2;
+          __prim__printf readLine3;
+
+          Temp::Cons_Boxes::free readLine1;
+          Temp::Cons_Boxes::free readLine2;
+          Temp::Cons_Boxes::free readLine3;
 
           f::close_file fileWritePlus
         )
