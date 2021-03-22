@@ -42,7 +42,15 @@ main =
   directoryPath := IO::FS::string_to_path directory                     ;
 
   match (IO::FS::file_type directoryPath)
-    to enum Directory => debug $ IO::FS::remove_dir directoryPath       ;
+    to enum Directory   => debug $ IO::FS::remove_dir  directoryPath
+    to enum File        => debug $ IO::FS::remove_file directoryPath
+    to enum Symlink     => debug $ IO::FS::remove_file directoryPath
+    to enum CharDevice  => debug $ IO::FS::remove_file directoryPath
+    to enum BlockDevice => debug $ IO::FS::remove_file directoryPath
+    to enum Socket      => debug $ IO::FS::remove_file directoryPath
+    to enum FIFO_Pipe   => debug $ IO::FS::remove_file directoryPath
+    to enum Err         => debug enum Err
+  ;
   debug $ IO::FS::create_dir directoryPath                              ;
 
   directoryCanonicalPath := IO::FS::canonicalize directoryPath          ;
