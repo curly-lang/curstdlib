@@ -1,0 +1,37 @@
+module Main
+import Types::Collections::HashMap as HashMap
+
+import Temp::Cons_Boxes (cons_S)
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+extern "__curly_prim__print_str"
+__prim_printf : ptr String -> enum Ok
+
+@impure
+main =
+  hashMapThing := HashMap::new;
+  hashMapKey   := Temp::Cons_Boxes::cons_to_c "TestMapKey";
+
+  hashMapValue := Temp::Cons_Boxes::cons_to_c "TestMapValue";
+  HashMap::insert hashMapThing hashMapKey hashMapValue;
+  Temp::Cons_Boxes::free hashMapValue;
+
+  returnedHashMapValue := HashMap::get hashMapThing hashMapKey;
+  __prim_printf returnedHashMapValue;
+  Temp::Cons_Boxes::free returnedHashMapValue;
+
+  HashMap::print hashMapThing;
+
+  HashMap::remove hashMapThing hashMapKey;
+
+  returnedHashMapValue := HashMap::get hashMapThing hashMapKey;
+  __prim_printf returnedHashMapValue;
+  Temp::Cons_Boxes::free returnedHashMapValue;
+
+  Temp::Cons_Boxes::free hashMapKey;
+
+  HashMap::free hashMapThing;
+
+  enum Ok

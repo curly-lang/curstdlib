@@ -1,0 +1,71 @@
+module Types::Collections::HashMap
+  (
+    new    :                                                  ptr HashMap   ,
+    free   : ptr HashMap                                   -> enum Ok       ,
+
+    insert : ptr HashMap -> ptr String -> ptr String       -> Bool          ,
+    remove : ptr HashMap -> ptr String                     -> Bool          ,
+
+    get    : ptr HashMap -> ptr String                     -> ptr String    ,
+    keys   : ptr HashMap                                   -> ptr StringArr ,
+
+    print  : ptr HashMap                                   -> enum Ok       
+  )
+
+type StringChar = Char | String
+type String = (StringChar -> StringChar -> StringChar) -> StringChar
+
+@impure
+extern "__curly_HashMap_new"
+__prim_HashMap_new    : ptr HashMap
+
+@impure
+new = __prim_HashMap_new
+
+@impure
+extern "__curly_HashMap_free"
+__prim_HashMap_free   : ptr HashMap -> enum Ok
+
+@impure
+free hashMap: ptr HashMap = __prim_HashMap_free hashMap
+
+
+
+@impure
+extern "__curly_HashMap_insert"
+__prim_HashMap_insert : ptr HashMap -> ptr String -> ptr String -> Bool
+
+@impure
+insert hashMap: ptr HashMap, key: ptr String, value: ptr String = __prim_HashMap_insert hashMap key value
+
+@impure
+extern "__curly_HashMap_remove"
+__prim_HashMap_remove : ptr HashMap -> ptr String -> Bool
+
+@impure
+remove hashMap: ptr HashMap, key: ptr String = __prim_HashMap_remove hashMap key
+
+
+
+@impure
+extern "__curly_HashMap_get"
+__prim_HashMap_get    : ptr HashMap -> ptr String -> ptr String
+
+@impure
+get hashMap: ptr HashMap, key: ptr String = __prim_HashMap_get hashMap key
+
+@impure
+extern "__curly_HashMap_keys"
+__prim_HashMap_keys   : ptr HashMap -> ptr StringArr
+
+@impure
+keys hashMap: ptr HashMap = __prim_HashMap_keys hashMap
+
+
+
+@impure
+extern "__curly_HashMap_print"
+__prim_HashMap_print  : ptr HashMap -> enum Ok
+
+@impure
+print hashMap: ptr HashMap = __prim_HashMap_print hashMap
