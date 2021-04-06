@@ -7,7 +7,8 @@ module Math
     sqrt        : Int | Float                   -> Float       ,
     pow         : Int | Float -> Int | Float    -> Int | Float ,
     root        : Int | Float -> Int            -> Float       ,
-    removeWhole : Float                         -> Float
+    removeWhole : Float                         -> Float       ,
+    nlogn       : Float       -> Float          -> Float       
   )
 
 
@@ -15,9 +16,11 @@ module Math
 
 
 # (power of 2)th root of a number
-rtPow2 num:Float, root:Int =
+rtPow2 num:Int | Float, root:Int =
   if root == 1 then
-    num
+    match num
+      to n: Float => n
+      to i: Int   => i * 1.0
   else
     rtPow2 (sqrt num) (root / 2)
 
@@ -31,6 +34,14 @@ minDivNumPow2 num:Float, guess:Int =
   else
     minDivNumPow2 num (guess * 2)
 
+
+_maxExpN x: Float, n: Float, currPowN: Float, currExpN: Int =
+  if n * currPowN > x then
+    currExpN
+  else
+    _maxExpN x n (currPowN * n) (currExpN + 1)
+
+maxPowN x: Float, n: Float = _maxExpN x n 1.0 0
 
 
 
@@ -104,24 +115,39 @@ abs num: Int | Float = match num : Int | Float
 
 # recursive Int floor
 _floor_Int   numIn: Int,   numOut: Int =
-  if numIn < 1 and numIn >= 0 then
+  if 0 <= numIn and numIn < 1 then
     numOut
   else
-    if numIn > 0 then
-      _floor_Int   (numIn - (maxPow2 (abs numIn))) (numOut + (maxPow2 (abs numIn)))
-    else
-      _floor_Int   (numIn + (maxPow2 (abs numIn))) (numOut - (maxPow2 (abs numIn)))
+    if numIn > 0 then (
+      maxPow    := maxPow2 (abs numIn);
+      newNumIn  := numIn - maxPow;
+      newNumOut := numOut + maxPow;
+      _floor_Int   newNumIn newNumOut
+    )
+    else (
+      maxPow    := maxPow2 (abs numIn);
+      newNumIn  := numIn + maxPow;
+      newNumOut := numOut - maxPow;
+      _floor_Int   newNumIn newNumOut
+    )
 
 # recursive Float floor
 _floor_Float numIn: Float, numOut: Int =
-  if numIn < 1 and numIn >= 0 then
+  if 0 <= numIn and numIn < 1 then
     numOut
   else
-        if numIn > 0 then
-      _floor_Float (numIn - (maxPow2 (abs numIn))) (numOut + (maxPow2 (abs numIn)))
-    else
-      _floor_Float (numIn + (maxPow2 (abs numIn))) (numOut - (maxPow2 (abs numIn)))
-
+    if numIn > 0 then (
+      maxPow    := maxPow2 (abs numIn);
+      newNumIn  := numIn - maxPow;
+      newNumOut := numOut + maxPow;
+      _floor_Float newNumIn newNumOut
+    )
+    else (
+      maxPow    := maxPow2 (abs numIn);
+      newNumIn  := numIn + maxPow;
+      newNumOut := numOut - maxPow;
+      _floor_Float newNumIn newNumOut
+    )
 
 # Int | Float and recursive handler for floor
 floor num: Int | Float = match num : Int | Float
@@ -132,18 +158,32 @@ floor num: Int | Float = match num : Int | Float
 
 
 # recursive Int sqrt
-_sqrt_Int   num: Int,   guess: Float  =
-  if _abs_Float (guess * guess - num) < (num * 0.000000000001) then
+_sqrt_Int   num: Int,   guess: Float = (
+  maxError  := (num * 0.000000000001);
+  currDiff  := guess * guess - num;
+  currError := _abs_Float currDiff; 
+  if currError < maxError then
     guess
-  else
-    _sqrt_Int   num  ((guess + (num / guess)) / 2)
+  else (
+    guess2 := num / guess;
+    average := (guess + guess2) / 2;
+    _sqrt_Int num average
+  )
+)
 
 # recursive Float sqrt
-_sqrt_Float num: Float, guess: Float  =
-  if _abs_Float (guess * guess - num) < (num * 0.000000000001) then
+_sqrt_Float num: Float, guess: Float = (
+  maxError  := (num * 0.000000000001);
+  currDiff  := guess * guess - num;
+  currError := _abs_Float currDiff; 
+  if currError < maxError then
     guess
-  else
-    _sqrt_Float num  ((guess + (num / guess)) / 2)
+  else (
+    guess2 := num / guess;
+    average := (guess + guess2) / 2;
+    _sqrt_Float num average
+  )
+)
 
 
 # Int | Float and recursive handler for sqrt
@@ -155,38 +195,69 @@ sqrt num: Int | Float = match num : Int | Float
 
 
 # Int, Int pow
-_pow_Int_Int     x: Int,   y: Int   =
-  if y <= 0 then
-    1
-  else
-    x * (_pow_Int_Int     x (y-1))
+_pow_Int_Int_tail     b: Int,   e: Int,   c: Int   =
+  if e <= 0 then
+    c
+  else (
+    newC := c * b;
+    newE := e - 1;
+    _pow_Int_Int_tail     b newE newC
+  )
 
 # Int, Float pow
-_pow_Int_Float   x: Int,   y: Float =
-  if y < 1 then
-    if y <= 0.000001 then
-      1.0
-    else
-      (rtPow2 (x+0.0) (minDivNumPow2 y 1)) * (_pow_Int_Float   x (y - (1.0 / (minDivNumPow2 y 1))))
-  else
-    x * (_pow_Int_Float   x (y-1))
+_pow_Int_Float_tail   b: Int,   e: Float, c: Float  =
+  if e < 1 then
+    if e <= 0.00001 then
+      c
+    else (
+      minDivNum := minDivNumPow2 e 1;
+      amtToMult := rtPow2 b minDivNum;
+      newC      := c * amtToMult;
+      amtToSub  := 1.0 / minDivNum;
+      newE      := e - amtToSub;
+      _pow_Int_Float_tail   b newE newC
+    )
+  else (
+    newC := c * b;
+    newE := e - 1;
+    _pow_Int_Float_tail   b newE newC
+  )
 
 # Float, Int pow
-_pow_Float_Int   x: Float, y: Int   =
-  if y <= 0 then
-    1.0
-  else
-    x * (_pow_Float_Int   x (y-1))
+_pow_Float_Int_tail   b: Float, e: Int,   c: Float =
+  if e <= 0 then
+    c
+  else (
+    newC := c * b;
+    newE := e - 1;
+    _pow_Float_Int_tail   b newE newC
+  )
 
 # Float, Float pow
-_pow_Float_Float x: Float, y: Float =
-  if y < 1 then
-    if y <= 0.00001 then
-      1.0
-    else
-      (rtPow2 x       (minDivNumPow2 y 1)) * (_pow_Float_Float x (y - (1.0 / (minDivNumPow2 y 1))))
-  else
-    x * (_pow_Float_Float x (y-1))
+_pow_Float_Float_tail b: Float, e: Float, c: Float =
+  if e < 1 then
+    if e <= 0.00001 then
+      c
+    else (
+      minDivNum := minDivNumPow2 e 1;
+      amtToMult := rtPow2 b minDivNum;
+      newC      := c * amtToMult;
+      amtToSub  := 1.0 / minDivNum;
+      newE      := e - amtToSub;
+      _pow_Float_Float_tail b newE newC
+    )
+  else (
+    newC := c * b;
+    newE := e - 1;
+    _pow_Float_Float_tail b newE newC
+  )
+
+
+_pow_Int_Int     b: Int,   e: Int   = _pow_Int_Int_tail     b e 1
+_pow_Int_Float   b: Int,   e: Float = _pow_Int_Float_tail   b e 1.0
+_pow_Float_Int   b: Float, e: Int   = _pow_Float_Int_tail   b e 1.0
+_pow_Float_Float b: Float, e: Float = _pow_Float_Float_tail b e 1.0
+
 
 
 # Int, Int | Float handler for pow
@@ -209,18 +280,40 @@ pow base: Int | Float, exponent: Int | Float = match base : Int | Float
 
 
 # recursive Int root
-_root_Int   num: Int,   root: Int, guess: Float =
-  if _abs_Float ((_pow_Float_Int guess root) - num) < (num * 0.000000000001) then
+_root_Int   num: Int,   root: Int, guess: Float = (
+  diff      := (_pow_Float_Int guess root) - num;
+  absDiff   := _abs_Float diff;
+  targetAcc := num * 0.000000000001;
+  
+  if absDiff < targetAcc then
     guess
-  else
-    _root_Int   num root (((guess * (root - 1)) + (num / (_pow_Float_Int guess (root - 1)))) / root)
+  else (
+    nMinOneX := guess * (root - 1);
+    den      := _pow_Float_Int guess (root - 1);
+    frac     := num / den;
+    paren    := nMinOneX + frac;
+    newGuess := paren / root;
+    _root_Int   num root newGuess
+  )
+)
 
 # recursive Float root
-_root_Float num: Float, root: Int, guess: Float =
-  if _abs_Float ((_pow_Float_Int guess root) - num) < (num * 0.000000000001) then
+_root_Float num: Float, root: Int, guess: Float = (
+  diff      := (_pow_Float_Int guess root) - num;
+  absDiff   := _abs_Float diff;
+  targetAcc := num * 0.000000000001;
+
+  if absDiff < targetAcc then
     guess
-  else
-    _root_Float num root (((guess * (root - 1)) + (num / (_pow_Float_Int guess (root - 1)))) / root)
+  else (
+    nMinOneX := guess * (root - 1);
+    den      := _pow_Float_Int guess (root - 1);
+    frac     := num / den;
+    paren    := nMinOneX + frac;
+    newGuess := paren / root;
+    _root_Float num root newGuess
+  )
+)
 
 
 # Int | Float and recursive handler for root
