@@ -2,14 +2,15 @@ module Main
 import Math
 
 main =
-  debug (Math::maxPow2        1000    );
-  debug (Math::maxPow10       2759    );
-  debug (Math::abs          (-52)     );
-  debug (Math::abs            52      );
-  debug (Math::floor        (-4.391)  );
-  debug (Math::sqrt           400     );
-  debug (Math::pow            3      5);
-  debug (Math::root           16     4);
-  debug (Math::removeWhole  (-10.4)   );
-  debug (Math::removeWhole    10.4    );
+  debug (Math::maxPow2        1000                        );
+  debug (Math::maxPow10       2759                        );
+  debug (Math::abs          (-52)                         );
+  debug (Math::abs            52                          );
+  debug (Math::floor        (-4.391)                      );
+  debug (Math::sqrt           400                         );
+  debug (Math::pow            3          5                );
+  debug (Math::root           16         4                );
+  debug (Math::removeWhole  (-10.4)                       );
+  debug (Math::removeWhole    10.4                        );
+  debug (Math::nlogn          12.0       1.1              );
   enum Ok

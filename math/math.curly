@@ -330,3 +330,32 @@ removeWhole float: Float =
     float - floor   float
   else
     float + floor (-float)
+
+
+_nlogn num: Float, base: Float, currGuess: Float, place: Int, origNum: Float = 
+  if place > (200 / base) then
+    currGuess
+  else (
+    n := maxPowN num base;
+
+    placeMult := 1 / (_pow_Float_Int base place);
+    guessAdd := n * placeMult;
+    newGuess := currGuess + guessAdd;
+
+    baseToN := _pow_Float_Int base n;
+    quo := num / baseToN;
+    newNum := _pow_Float_Float quo base;
+
+    _nlogn newNum base newGuess (place + 1) origNum
+  )
+
+
+nlogn num: Float, base: Float = (
+  n := maxPowN num base;
+
+  baseToN := _pow_Float_Int base n;
+  quo := num / baseToN;
+  newNum := _pow_Float_Float quo base;
+
+  _nlogn newNum base (n + 0.0) 1 num
+)
