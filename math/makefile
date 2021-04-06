@@ -10,7 +10,7 @@ USELIBFLAGS=-m $(STDLIB)/math/.lib/Math.curlylib
 libs:
 	$(CURLYC_DEBUG) build $(COMPLIBFLAGS) math.curly
 
-	rm -r .lib &> /dev/null; mkdir .lib
+	rm -r .lib > /dev/null 2>&1; mkdir .lib
 	cp .build/$(LIBNAME).curlylib  .lib/$(LIBNAME).curlylib
 
 all: libs
